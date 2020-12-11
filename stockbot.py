@@ -5,6 +5,7 @@ import pylab as pl
 
 
 ticker = ' '
+priorUps = 0
 ticker = input("Enter ticker: ")
 
 while ticker != 'exit':
@@ -22,10 +23,21 @@ while ticker != 'exit':
         price = (opens[i] + closes[i])/2
         prices.append(price)
 
+        if (i % 5) == 0:
+            difference = price - old_price
+            percent_change = (difference/old_price)*100
+            if percent_change > 10:
+                print(i)
+                priorUps += 1
+            old_price = price
+
     x = np.linspace(0, days, days)
     y = prices
     pl.plot(x,y)
 
-
+    print(priorUps)
     pl.show()
+    
+
+    priorUps = 0
     ticker = input("Enter ticker: ")
