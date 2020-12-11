@@ -4,20 +4,28 @@ import numpy as np
 import pylab as pl
 
 
-msft = yf.Ticker("MSFT")
-ticker = msft.history(start="2010-12-1",  end="2020-12-12")
-ticker = ticker.reset_index()
+ticker = ' '
+ticker = input("Enter ticker: ")
 
-opens = ticker['Open']
-closes = ticker['Close']
-daily_averages = []
+while ticker != 'exit':
 
-for i in range(opens.size):
-    average = (opens[i] + closes[i])/2
-    daily_averages.append(average)
+    ticker_info = yf.Ticker(ticker)
+    price_history = ticker_info.history(start="2010-12-1",  end="2020-12-12")
 
-x = np.linspace(0, opens.size, opens.size)
-y = daily_averages
-pl.plot(x,y)
+    opens = price_history['Open']
+    closes = price_history['Close']
+    old_price = (opens[0] + closes[0])/2
+    prices = []
 
-pl.show()
+    days = opens.size
+    for i in range(days):
+        price = (opens[i] + closes[i])/2
+        prices.append(price)
+
+    x = np.linspace(0, days, days)
+    y = prices
+    pl.plot(x,y)
+
+
+    pl.show()
+    ticker = input("Enter ticker: ")
