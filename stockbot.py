@@ -10,7 +10,7 @@ def make_functions(i, price, channel):
     support = []
     xvals = np.linspace(i, i + channel - 1, channel)
 
-    #THESE NEED TO BE ADJUSTED ACCORDING TO STOCK
+    #THESE NEED TO BE ADJUSTED ACCORDING TO STOCK TO IMPROVE ALGORITHM
     offset = (price/100)/20
     floor = (price/100)
     slope = 0.02
@@ -50,6 +50,7 @@ while True:
 
     fig = plt.figure()
     
+    #MAKE SEPARATE FUNCTION
     for i in range(days):
         
         price = (opens[i] + closes[i])/2
