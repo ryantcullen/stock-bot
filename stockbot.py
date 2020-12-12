@@ -4,10 +4,6 @@ import numpy as np
 import pylab as pl
 
 
-ticker = ' '
-priorUps = 0
-
-
 while True:
     ticker = input("Enter ticker: ")
     if ticker == 'exit':
@@ -35,16 +31,13 @@ while True:
             percent_change = (difference/old_price)*100
             if percent_change > perc:
                 print(i)
-                priorUps += 1
             old_price = price
 
     x = np.linspace(0, days, days)
     y = prices
     pl.plot(x,y)
 
-    print(priorUps)
     pl.show()
     
-    priorUps = 0
 
 
