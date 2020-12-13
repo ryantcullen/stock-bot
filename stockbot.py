@@ -75,6 +75,7 @@ while True:
                 counter = 0
             else: counter += 1
                 
+                
 
 
             if counter > channel_range - 1:
