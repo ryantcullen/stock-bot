@@ -4,13 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-flagpole = False
-make_flag = False
-counter = 0
-resistance = []
-support = []
-xvals = []
-
 def MakeChannel(i, price, length):
     
     resistance = []
@@ -29,13 +22,17 @@ def MakeChannel(i, price, length):
 
     return resistance, support, xvals
 
-def BullFlags():
-        global flagpole
-        global make_flag
-        global counter
-        global resistance
-        global support
-        global xvals
+class BullFlag:
+    flagpole = False
+    make_flag = False
+    counter = 0
+    resistance = []
+    support = []
+    xvals = []
+
+    def BullFlags(self):
+        global price
+        global prices
 
         if i < day_range:
             initial_price = prices[0]
@@ -44,38 +41,40 @@ def BullFlags():
             initial_price = prices[i - day_range]
             pole_price = prices[i - int(day_range/10)]
         
-        if flagpole != True:
+        if self.flagpole != True:
             runup_difference = price - initial_price
             pole_difference = price - pole_price
             runup = (runup_difference/initial_price)*100
             pole = (pole_difference/pole_price)*100
 
             if (runup > perc) & (pole > (perc/2)):
-                flagpole = True
-                make_flag = True
+                self.flagpole = True
+                self.make_flag = True
 
-        if flagpole:
-            if make_flag:
-                resistance, support, xvals = MakeChannel(i, price, channel_range)
-                make_flag = False
+        if self.flagpole:
+            if self.make_flag:
+                self.resistance, self.support, self.xvals = MakeChannel(i, price, channel_range)
+                self.make_flag = False
             
 
-            if price < support[counter]:
-                if counter > (channel_range/2):
-                    flagpole = False
-                    counter = 0
+            if price < self.support[self.counter]:
+                if self.counter > (channel_range/2):
+                    self.flagpole = False
+                    self.counter = 0
                 else:
-                    counter += 1
-            else: counter += 1
+                    self.counter += 1
+            else: self.counter += 1
 
-            if counter > channel_range - 1:
-                flagpole = False
-                counter = 0
-                if price > support[counter]:
-                    plt.plot(xvals, resistance)
-                    plt.plot(xvals, support)
+            if self.counter > channel_range - 1:
+                self.flagpole = False
+                self.counter = 0
+                if price > self.support[self.counter]:
+                    plt.plot(self.xvals, self.resistance)
+                    plt.plot(self.xvals, self.support)
                     print("Found Flag")
                     print(i)
+
+bf = BullFlag()
 
 while True:
 
@@ -98,7 +97,7 @@ while True:
     for i in range(days):
         price = (opens[i] + closes[i])/2
         prices.append(price)
-        BullFlags()
+        bf.BullFlags()
     
     
 
