@@ -4,12 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def MakeChannel(i, price, length):
+def MakeChannel(i, price, length, n):
     
     resistance = []
     support = []
     xvals = np.linspace(i, i + length - 1, length)
-    slope = closes[days-1]/5000
+    slope = n*closes[days-1]/5000
 
     offset = (price/100)/10
     floor = (price/100) * 1.2
@@ -23,6 +23,7 @@ def MakeChannel(i, price, length):
     return resistance, support, xvals
 
 class BullFlag:
+    
     flagpole = False
     make_flag = False
     counter = 0
@@ -31,8 +32,6 @@ class BullFlag:
     xvals = []
 
     def BullFlags(self):
-        global price
-        global prices
 
         if i < day_range:
             initial_price = prices[0]
@@ -53,7 +52,7 @@ class BullFlag:
 
         if self.flagpole:
             if self.make_flag:
-                self.resistance, self.support, self.xvals = MakeChannel(i, price, channel_range)
+                self.resistance, self.support, self.xvals = MakeChannel(i, price, channel_range, 1)
                 self.make_flag = False
             
 
@@ -68,13 +67,75 @@ class BullFlag:
             if self.counter > channel_range - 1:
                 self.flagpole = False
                 self.counter = 0
+                #maybe average proces for this comparison
                 if price > self.support[self.counter]:
-                    plt.plot(self.xvals, self.resistance)
-                    plt.plot(self.xvals, self.support)
-                    print("Found Flag")
-                    print(i)
+                    # plt.plot(self.xvals, self.resistance)
+                    # plt.plot(self.xvals, self.support)
+                    plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+                    # print("Found Flag")
+                    # print(i)
 
-bf = BullFlag()
+class BullBearRuns:
+
+    up_weeks = []
+    down_weeks = []
+    bull_run = False
+    bear_run = True
+    initial_price = 0
+
+    def RunCheck(self):
+
+        if i % 5 == 0:
+            if i < day_range:
+                self.initial_price = prices[0]
+            else:
+                self.initial_price = prices[i - 4]
+
+            if price > self.initial_price:
+                if len(self.up_weeks) > 3:
+                    self.up_weeks.append(1)
+                    self.down_weeks.append(0)
+                    self.up_weeks.pop(0)
+                    self.down_weeks.pop(0)
+                else:
+                    self.up_weeks.append(1)
+                    self.down_weeks.append(0)
+            else:
+                if len(self.up_weeks) > 3:
+                    self.up_weeks.append(0)
+                    self.down_weeks.append(1)
+                    self.up_weeks.pop(0)
+                    self.down_weeks.pop(0)
+                else:
+                    self.up_weeks.append(0)
+                    self.down_weeks.append(1)
+            
+        ups = 1
+        downs = 1
+        #this can be optimized by only adding the next num and subtracting the first and then re calc average
+        for x in range(len(self.up_weeks)):
+            ups += self.up_weeks[x]
+            downs += self.down_weeks[x]
+
+        updown_ratio = ups/downs
+
+        if (updown_ratio > 3):
+            self.bull_run = True
+            self.bear_run = False
+            plt.plot([i], [price], marker='o', markersize=4, color="red")
+            # print("Found Bull Run")
+            # print(i)
+        
+        if (updown_ratio < 0.9):
+            self.bull_run = False
+            self.bear_run = True
+            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+            # print("Found Bear Run")
+            # print(i)
+
+
+bullflag_detector = BullFlag()
+run_detector = BullBearRuns()
 
 while True:
 
@@ -97,8 +158,8 @@ while True:
     for i in range(days):
         price = (opens[i] + closes[i])/2
         prices.append(price)
-        bf.BullFlags()
-    
+        bullflag_detector.BullFlags()
+        run_detector.RunCheck()
     
 
     x = np.linspace(0, days, days)
