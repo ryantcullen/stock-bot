@@ -54,15 +54,6 @@ class BullFlag:
             if self.make_flag:
                 self.resistance, self.support, self.xvals = MakeChannel(i, price, channel_range, 1)
                 self.make_flag = False
-            
-
-            if price < self.support[self.counter]:
-                if self.counter > (channel_range/2):
-                    self.flagpole = False
-                    self.counter = 0
-                else:
-                    self.counter += 1
-            else: self.counter += 1
 
             if self.counter > channel_range - 1:
                 self.flagpole = False
@@ -73,7 +64,17 @@ class BullFlag:
                     # plt.plot(self.xvals, self.support)
                     plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
                     # print("Found Flag")
-                    # print(i)
+                    # print(i)         
+
+            if price < self.support[self.counter]:
+                if self.counter > (channel_range/2):
+                    self.flagpole = False
+                    self.counter = 0
+                else:
+                    self.counter += 1
+            else: self.counter += 1
+
+
 
 class BullBearRuns:
 
@@ -92,7 +93,7 @@ class BullBearRuns:
                 self.initial_price = prices[i - 4]
 
             if price > self.initial_price:
-                if len(self.up_weeks) > 3:
+                if len(self.up_weeks) > 7:
                     self.up_weeks.append(1)
                     self.down_weeks.append(0)
                     self.up_weeks.pop(0)
@@ -101,7 +102,7 @@ class BullBearRuns:
                     self.up_weeks.append(1)
                     self.down_weeks.append(0)
             else:
-                if len(self.up_weeks) > 3:
+                if len(self.up_weeks) > 7:
                     self.up_weeks.append(0)
                     self.down_weeks.append(1)
                     self.up_weeks.pop(0)
@@ -118,8 +119,8 @@ class BullBearRuns:
             downs += self.down_weeks[x]
 
         updown_ratio = ups/downs
-
-        if (updown_ratio > 3):
+        print(updown_ratio)
+        if (updown_ratio > 4):
             self.bull_run = True
             self.bear_run = False
             plt.plot([i], [price], marker='o', markersize=4, color="red")
