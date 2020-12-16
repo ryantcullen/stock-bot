@@ -34,16 +34,16 @@ class BullFlag:
     def BullFlags(self):
 
         if i < day_range:
-            initial_price = prices[0]
+            old_price = prices[0]
             pole_price = prices[0]
         else:
-            initial_price = prices[i - day_range]
+            old_price = prices[i - day_range]
             pole_price = prices[i - int(day_range/10)]
         
         if self.flagpole != True:
-            runup_difference = price - initial_price
+            runup_difference = price - old_price
             pole_difference = price - pole_price
-            runup = (runup_difference/initial_price)*100
+            runup = (runup_difference/old_price)*100
             pole = (pole_difference/pole_price)*100
 
             if (runup > perc) & (pole > (perc/2)):
@@ -82,18 +82,21 @@ class BullBearRuns:
     down_weeks = []
     bull_run = False
     bear_run = True
-    initial_price = 0
+    old_price = 0
+    
 
     def RunCheck(self):
 
         if i % 5 == 0:
             if i < day_range:
-                self.initial_price = prices[0]
+                self.old_price = prices[0]
             else:
-                self.initial_price = prices[i - 4]
+                self.old_price = prices[i - 6]
 
-            if price > self.initial_price:
-                if len(self.up_weeks) > 7:
+
+            if price > self.old_price:
+                #change based on stock price
+                if len(self.up_weeks) > 5:
                     self.up_weeks.append(1)
                     self.down_weeks.append(0)
                     self.up_weeks.pop(0)
@@ -102,7 +105,8 @@ class BullBearRuns:
                     self.up_weeks.append(1)
                     self.down_weeks.append(0)
             else:
-                if len(self.up_weeks) > 7:
+                #change based on stock price
+                if len(self.up_weeks) > 5:
                     self.up_weeks.append(0)
                     self.down_weeks.append(1)
                     self.up_weeks.pop(0)
@@ -110,29 +114,34 @@ class BullBearRuns:
                 else:
                     self.up_weeks.append(0)
                     self.down_weeks.append(1)
+
             
-        ups = 1
-        downs = 1
+
+        #tweak this (should they start at 0?)
+        ups = 0.5
+        downs = 0.5
+
         #this can be optimized by only adding the next num and subtracting the first and then re calc average
         for x in range(len(self.up_weeks)):
             ups += self.up_weeks[x]
             downs += self.down_weeks[x]
 
+        if i % 200 == 0:
+            for x in range(len(self.up_weeks)):
+                self.up_weeks[x] = 0
+                self.down_weeks[x] = 0
+        
         updown_ratio = ups/downs
         print(updown_ratio)
-        if (updown_ratio > 4):
+        if (updown_ratio > 7):
             self.bull_run = True
             self.bear_run = False
             plt.plot([i], [price], marker='o', markersize=4, color="red")
-            # print("Found Bull Run")
-            # print(i)
         
-        if (updown_ratio < 0.9):
+        if (updown_ratio < 0.5):
             self.bull_run = False
             self.bear_run = True
             plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
-            # print("Found Bear Run")
-            # print(i)
 
 
 bullflag_detector = BullFlag()
@@ -148,7 +157,7 @@ while True:
     channel_range = int(input("Enter channel range: "))
 
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2015-9-5",  end="2020-12-11")
+    price_history = ticker_info.history(start="2010-9-5",  end="2020-12-11")
 
     opens = price_history['Open']
     closes = price_history['Close']
