@@ -27,28 +27,24 @@ class Portfolio:
         """ Executes a buy order of n shares if value = 2, a sell order of
             n shares if value = 0, and holds the shares if value = 1.
         """
-        print(self.shares)
 
         # buy
-        if value == 2:
+        if value == 1:
             count = 0
             while self.capital >= price:
                 self.capital -= price
                 count += 1
             self.shares += count
-            self.portfolio_value = self.capital + self.shares*price
-            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+            plt.plot([i+1], [price], marker='o', markersize=4, color="limegreen")
 
         # sell
         elif value == 0:
             n = int(self.shares/2)
             self.shares -= n
             self.capital += price*n
-            self.portfolio_value = self.capital + self.shares*price
-            plt.plot([i], [price], marker='o', markersize=4, color="red")
+            plt.plot([i+1], [price], marker='o', markersize=4, color="red")
         
-        # hold
-        else: return
+        self.portfolio_value = self.capital + (self.shares*price)
     
 
 
@@ -90,34 +86,49 @@ class MovingAverage:
             self.price_list.pop(0)
         
         if i == 0:
-            self.result = price - 1
+            self.result = price - 0.1
         elif i < self.window:
             self.result = self.price_sum/(i+1)
         else:
             self.result = self.price_sum/self.window
 
     def BuySell(self):
-        # MODIFY TO BUY IF JUST BELOW AVERAGE AND SELL IF JUST ABOVE!!!!
         
         offset = averages[i]/100
 
+        # if i == 0:
+        #     if prices[i] > averages[i]:
+        #         self.above_average = True
+        #     else: self.above_average = False
+        # else:
+        #     if prices[i] > (averages[i] - offset):
+        #         if self.above_average == True:
+        #             return 1
+        #         else:
+        #             self.above_average = True
+        #             return 2
+        #     elif prices[i] < (averages[i] + offset):
+        #         if self.above_average == False:
+        #             return 1
+        #         else:
+        #             self.above_average = False
+        #             return 0
+
+        
         if i == 0:
             if prices[i] > averages[i]:
                 self.above_average = True
             else: self.above_average = False
         else:
-            if prices[i] > (averages[i] - offset):
-                if self.above_average == True:
-                    return 1
-                else:
+            if self.above_average == False:
+                if prices[i] > (averages[i] - offset):
                     self.above_average = True
-                    return 2
-            elif prices[i] < (averages[i] + offset):
-                if self.above_average == False:
                     return 1
-                else:
+            else:
+                if prices[i] < (averages[i] - 2*offset):
                     self.above_average = False
                     return 0
+
 
 
         
@@ -135,7 +146,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2000-12-11",  end="2020-12-11")
+    price_history = ticker_info.history(start="2019-11-05",  end="2020-12-11")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -146,24 +157,24 @@ while True:
 
     # calculates the inital price of the stock, and 
     # the number of days we are looking back in history
-    price = (opens[0] + closes[0])/2
+    price = closes[0]
     days = opens.size
 
     # initialize figure for plotting
     fig = plt.figure()
 
     # initialize the portfolio and moving average objects
-    starting_capital = 100
+    starting_capital = 0
     starting_shares = 100
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
-    moving_average = MovingAverage(15, portfolio)
+    moving_average = MovingAverage(20, portfolio)
 
     # iterate over the history of the stock
     for i in range(days):
         
         # calculate the daily average proce and add it to the list of prices
-        price = (opens[i] + closes[i])/2
+        price = closes[i]
         prices.append(price)
         
         # calculate the current moving average and add it to the list of moving averages
@@ -174,7 +185,7 @@ while True:
         value = moving_average.BuySell()
         portfolio.Order(value)
     
-    control_value = starting_capital + prices[days - 1] * starting_shares
+    control_value = starting_capital + (prices[days - 1] * starting_shares)
     algo_value = portfolio.portfolio_value
 
     print(" ")
@@ -187,7 +198,7 @@ while True:
     print(" ")
 
     # plot the price history and moving average history
-    x = np.linspace(0, days, days)
+    x = np.linspace(1, days, days)
     plt.plot(x,prices)
     plt.plot(x,averages)
     plt.show()
