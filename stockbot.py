@@ -70,7 +70,9 @@ class MovingAverage:
         self.result = 0
         self.portfolio = portfolio
         self.above_average = True
-        self.counter = 0
+        self.slope_sum = 0
+        self.slopes = []
+        self.avg_slopes = []
         
         
 
@@ -97,12 +99,12 @@ class MovingAverage:
 
     def BuySell(self):
         
-        offset = averages[i]/200
+        offset = averages[i]/100
         difference = abs(price - averages[i])
         perc = (difference/averages[i])
         t = 3
-        min_slope = 0.02
-        max_slope = 0.06
+        t2 = 10
+
 
         if i < t:
             slope_rise = averages[i] - averages[0]
@@ -110,39 +112,51 @@ class MovingAverage:
         else:
             slope_rise = averages[i] - averages[i- t]
             slope = slope_rise/t
+
+
+        if i < t2:
+            self.slopes.append(slope)
+            self.slope_sum += slope
+            avg_slope = self.slope_sum/(i+1)
+            self.avg_slopes.append(avg_slope)
+            concavity = self.avg_slopes[i] - self.avg_slopes[0]
+        else:
+            self.slopes.append(slope)
+            self.slope_sum += slope
+            self.slope_sum -= self.slopes[0]
+            self.slopes.pop(0)
+
+            avg_slope = self.slope_sum/t2
+            self.avg_slopes.append(avg_slope)
+            self.avg_slopes.pop(0)
+            concavity = self.avg_slopes[t2-1] - self.avg_slopes[0]
         
+        print(concavity)
+        print(i)
+        print("-------------")
 
-
-        if i == 0:
-            if price > averages[i]:
-                self.above_average = True
-            else: self.above_average = False
-
-        if abs(slope) < min_slope:
-            if price < (averages[i] - offset):
-                return 2
-            elif price > (averages[i] + offset):
-                if slope < 0:
-                    print(price)
-                    print(i)
-                    print(slope)
-                    print("-----------")
+        if abs(avg_slope) < 0.03:
+            if price < averages[i]:
+                if concavity > -0.01:
+                    return 2
+            else:
+                if concavity < 0.01:
                     return 0
+            
 
-        elif abs(slope) > max_slope:
-            self.counter += 1
-            if (price > (averages[i] - offset)):
-                if self.above_average != True:
-                    if self.counter > 40:
-                        self.above_average = True
-                        self.counter = 0
-                        return 2
-            elif (price < (averages[i] + offset)):
-                if self.above_average != False:
-                    if self.counter > 40:
-                        self.above_average = False
-                        self.counter = 0
-                        return 0
+        # if avg_slope < 0.03:
+        #     if price < (averages[i] - offset):
+        #         return 2
+        #     elif price > (averages[i] + offset):
+        #         return 0
+
+        # else:
+        #     if concavity > 0.01:
+        #         return 2
+        #     elif concavity < -0.01:
+        #         if price > (averages[i] - offset):
+        #             return 0
+
         
 
 
@@ -183,7 +197,7 @@ while True:
     starting_shares = 100
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
-    moving_average = MovingAverage(30, portfolio)
+    moving_average = MovingAverage(15, portfolio)
 
     # iterate over the history of the stock
     for i in range(days):
