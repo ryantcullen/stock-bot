@@ -154,11 +154,11 @@ class MovingAverage:
 
 
         if price < averages[i]:
-            if concavity > -0.1:
+            if concavity > -0.05:
                 if avg_slope > -0.4:
                     return 2
         else:
-            if concavity < -0.2:
+            if concavity < -0.1:
                 if avg_slope < 0.4:
                     return 0
 
