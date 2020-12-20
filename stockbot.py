@@ -52,148 +52,90 @@ class MovingAverage:
     
     Calculates the moving average of a stock proce at a given time.
 
-    Attributes:
-        window: the number of days over which to calculate the moving average.
-        price_sum: sum of the close prices from the last (window) days.
-        price_list: list of the close prices from the last (window) days.
-        result: the result of the moving average calculation.
-        portfolio: the global portolio for use within the class
-        self.above_average: boolean to check if the stock price has self.self.flipped over the moving average line (either up or down)
 
     """
 
     def __init__(self, window, portfolio):
         """ Inits a MovingAverage object """  
         self.window = window
+        self.portfolio = portfolio
+        
         self.price_sum = 0
         self.price_list = []
-        self.result = 0
-        self.portfolio = portfolio
+
+        self.average = 0
+        self.avg_sum = 0
+        self.avg_list = []   
+        self.double_average = 0
+        self.percent_difference = 0
+
+        self.slope = 0
         self.slope_sum = 0
+        self.avg_slope = 0
         self.slopes = []
         self.avg_slopes = []
+        self.concavity = 0 
+
         self.above = False
-        self.counter = 0
         self.flipped = False
+
         
         
 
-    def CalculateAverage(self):
+    def CalculateAverage(self, value, window):
+
         """ Calculates the value for the moving average over the last (window) days """
+
+        value_list.append(value)
+        value_sum += value
+
         if i < self.window:
-            self.price_list.append(price)
-            self.price_sum += price
+            average = self.value_sum/(i+1)
+            value_list.append(value)
         else:
-            self.price_list.append(price)
-            self.price_sum += price
-            self.price_sum -= self.price_list[0]
-            self.price_list.pop(0)
+            self.value_sum -= self.value_list[0]
+            self.value_list.pop(0)
+            self.average = self. value_sum/window
+    
+    def GetInfo(self):
+        """ Gets the slope and concavity information """
+
+        # calculate slope
+        if i > 1:
+            self.slope = averages[i] - averages[i - 1]
+        self.slopes.append(self.slope)
+        self.slope_sum += self.slope
         
-        if i == 0:
-            self.result = price - 0.1
-        elif i < self.window:
-            self.result = self.price_sum/(i+1)
+        # percent deviation from the mean
+        difference = price - averages[i]
+        self.percent_difference = difference/averages[i]
+
+        # calculate average slope and concavity
+        if i < self.window:
+            self.avg_slope = self.slope_sum/(i+1)
+            self.avg_slopes.append(self.avg_slope)
+            self.concavity = self.avg_slopes[i] - self.avg_slopes[0]
         else:
-            difference = price - (self.price_sum/self.window)
-            self.result = (self.price_sum/self.window)
-
-
-
-    def BuySell(self):
-        
-        offset = averages[i]/100
-        difference = abs(price - averages[i])
-        perc = (difference/averages[i])
-        t = 3
-        t2 = 15
-
-
-        if i < t:
-            slope_rise = averages[i] - averages[0]
-            slope = slope_rise/(i+1)
-        else:
-            slope_rise = averages[i] - averages[i- t]
-            slope = slope_rise/t
-        
-        if i == 0:
-            if price > averages[i]:
-                self.above = True
-            else:
-                self.above = False
-        else:
-            self.counter += 1
-            if price > averages[i]:
-                if self.above == False: 
-                    self.above = True
-                    self.flipped = True
-                    self.counter = 0
-            else:
-                if self.above:
-                    self.above = False
-                    self.flipped = True
-                    self.counter = 0
-                
-
-        if i < t2:
-            self.slopes.append(slope)
-            self.slope_sum += slope
-            avg_slope = self.slope_sum/(i+1)
-            self.avg_slopes.append(avg_slope)
-            concavity = self.avg_slopes[i] - self.avg_slopes[0]
-        else:
-            self.slopes.append(slope)
-            self.slope_sum += slope
             self.slope_sum -= self.slopes[0]
             self.slopes.pop(0)
-
-            avg_slope = self.slope_sum/t2
-            self.avg_slopes.append(avg_slope)
+            self.avg_slope = self.slope_sum/self.window
+            self.avg_slopes.append(self.avg_slope)
             self.avg_slopes.pop(0)
-            concavity = self.avg_slopes[t2-1] - self.avg_slopes[int(t/2)]
-        
+            self.concavity = self.avg_slopes[self.window - 1] - self.avg_slopes[int(self.window/4)]
 
 
-        if price < averages[i]:
-            if concavity > -0.05:
-                if avg_slope > -0.4:
-                    return 2
+        # check if we flip over average line
+        if price > averages[i]:
+            if self.above == False: 
+                self.above = True
+                self.flipped = True
+            else: self.flipped = False
         else:
-            if concavity < -0.1:
-                if avg_slope < 0.4:
-                    return 0
-
-        if i > t2:
-            # Flat Trader
-            if -0.1 < avg_slope < 0.1:
-                if price < averages[i]:
-                    if concavity > 0:
-                        return 2
-                else:
-                    if concavity < 0.1:
-                        return 0
-            
-            else:
-                if self.above:
-                    if self.counter > 5:
-                        if self.flipped == True:
-                            self.flipped = False
-                            return 2
-                else:
-                    if self.counter > 5:
-                        if self.flipped == True:
-                            self.flipped = False
-                            return 0
-    
-  
-
-
-                
-
-
-        
-
-
-
+            if self.above:
+                self.above = False
+                self.flipped = True
+            else: self.flipped = False
+ 
         
 
 """
@@ -214,7 +156,10 @@ while True:
     # and the daily average prices.
     opens = price_history['Open']
     closes = price_history['Close']
+    averages2 = []
     averages = []
+    double_averages = []
+    double_averages2 = []
     prices = []
 
     # calculates the inital price of the stock, and 
@@ -230,26 +175,35 @@ while True:
     starting_shares = 100
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
-    moving_average = MovingAverage(40, portfolio)
+    moving_average = MovingAverage(30, portfolio)
+    moving_average2 = MovingAverage(10, portfolio)
 
-    s = portfolio.shares
 
     # iterate over the history of the stock
     for i in range(days):
-        s = portfolio.shares
         
         # calculate the daily average proce and add it to the list of prices
         price = closes[i]
         prices.append(price)
         
         # calculate the current moving average and add it to the list of moving averages
-        moving_average.CalculateAverage()
-        averages.append(moving_average.result)
+        moving_average.CalculateAverages()
+        moving_average2.CalculateAverages()
+
+        averages.append(moving_average.average)
+        averages2.append(moving_average2.average)
+
+        double_averages.append(moving_average.double_average)
+        double_averages2.append(moving_average2.double_average)
+
+        moving_average.GetInfo()
 
         # decide if we buy, sell, or hold
-        value = moving_average.BuySell()
-        portfolio.Order(value)
+        # moving_average.BuySell()
+        # portfolio.Order(value)
     
+    
+    # did we win?
     control_value = starting_capital + (prices[days - 1] * starting_shares)
     algo_value = portfolio.portfolio_value
 
@@ -265,7 +219,9 @@ while True:
     # plot the price history and moving average history
     x = list(range(0, days))
     plt.plot(x,prices)
-    plt.plot(x,averages)
+    plt.plot(x, averages)
+    plt.plot(x, double_averages)
+    plt.plot(x, double_averages2)
     plt.show()
 
 
