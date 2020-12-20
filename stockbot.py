@@ -39,8 +39,8 @@ class Portfolio:
 
         # sell
         elif value == 0:
-            self.capital += self.shares*price
-            self.shares = 0
+            self.capital += int(self.shares/2)*price
+            self.shares -= int(self.shares/2)
             plt.plot([i], [price], marker='o', markersize=4, color="red")
         
         self.portfolio_value = self.capital + (self.shares*price)
@@ -58,7 +58,7 @@ class MovingAverage:
         price_list: list of the close prices from the last (window) days.
         result: the result of the moving average calculation.
         portfolio: the global portolio for use within the class
-        above_average: boolean to check if the stock price has flipped over the moving average line (either up or down)
+        self.above_average: boolean to check if the stock price has self.self.flipped over the moving average line (either up or down)
 
     """
 
@@ -69,10 +69,12 @@ class MovingAverage:
         self.price_list = []
         self.result = 0
         self.portfolio = portfolio
-        self.above_average = True
         self.slope_sum = 0
         self.slopes = []
         self.avg_slopes = []
+        self.above = False
+        self.counter = 0
+        self.flipped = False
         
         
 
@@ -103,7 +105,7 @@ class MovingAverage:
         difference = abs(price - averages[i])
         perc = (difference/averages[i])
         t = 3
-        t2 = 10
+        t2 = 15
 
 
         if i < t:
@@ -112,7 +114,25 @@ class MovingAverage:
         else:
             slope_rise = averages[i] - averages[i- t]
             slope = slope_rise/t
-
+        
+        if i == 0:
+            if price > averages[i]:
+                self.above = True
+            else:
+                self.above = False
+        else:
+            self.counter += 1
+            if price > averages[i]:
+                if self.above == False: 
+                    self.above = True
+                    self.flipped = True
+                    self.counter = 0
+            else:
+                if self.above:
+                    self.above = False
+                    self.flipped = True
+                    self.counter = 0
+                
 
         if i < t2:
             self.slopes.append(slope)
@@ -129,33 +149,46 @@ class MovingAverage:
             avg_slope = self.slope_sum/t2
             self.avg_slopes.append(avg_slope)
             self.avg_slopes.pop(0)
-            concavity = self.avg_slopes[t2-1] - self.avg_slopes[0]
+            concavity = self.avg_slopes[t2-1] - self.avg_slopes[int(t/2)]
         
-        print(concavity)
-        print(i)
-        print("-------------")
 
-        if abs(avg_slope) < 0.03:
-            if price < averages[i]:
-                if concavity > -0.01:
+
+        if price < averages[i]:
+            if concavity > -0.1:
+                if avg_slope > -0.4:
                     return 2
-            else:
-                if concavity < 0.01:
+        else:
+            if concavity < -0.2:
+                if avg_slope < 0.4:
                     return 0
+
+        if i > t2:
+            # Flat Trader
+            if -0.05 < avg_slope < 0.05:
+                if price < averages[i]:
+                    if concavity > 0:
+                        return 2
+                else:
+                    if concavity < 0.1:
+                        return 0
             
+            else:
+                if self.above:
+                    if self.counter > 5:
+                        if self.flipped == True:
+                            self.flipped = False
+                            return 2
+                else:
+                    if self.counter > 5:
+                        if self.flipped == True:
+                            self.flipped = False
+                            return 0
+    
+  
 
-        # if avg_slope < 0.03:
-        #     if price < (averages[i] - offset):
-        #         return 2
-        #     elif price > (averages[i] + offset):
-        #         return 0
 
-        # else:
-        #     if concavity > 0.01:
-        #         return 2
-        #     elif concavity < -0.01:
-        #         if price > (averages[i] - offset):
-        #             return 0
+                
+
 
         
 
@@ -197,10 +230,13 @@ while True:
     starting_shares = 100
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
-    moving_average = MovingAverage(15, portfolio)
+    moving_average = MovingAverage(40, portfolio)
+
+    s = portfolio.shares
 
     # iterate over the history of the stock
     for i in range(days):
+        s = portfolio.shares
         
         # calculate the daily average proce and add it to the list of prices
         price = closes[i]
