@@ -48,7 +48,7 @@ class Portfolio:
 
 
 class MovingAverage:
-    """ Moving Average  
+    """ Moving Average 
     
     Calculates the moving average of a stock proce at a given time.
 
@@ -164,7 +164,7 @@ class MovingAverage:
 
         if i > t2:
             # Flat Trader
-            if -0.05 < avg_slope < 0.05:
+            if -0.1 < avg_slope < 0.1:
                 if price < averages[i]:
                     if concavity > 0:
                         return 2
