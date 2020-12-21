@@ -24,22 +24,31 @@ class Portfolio:
         self.portfolio_value = self.capital + self.shares*self.initial_price
         self.run = 0
 
-    def Decide(self, f1, f2, f3):
+    def Decide(self, f1, f2, f3, window):
+        
+        if i < (window):
+            edge = window - (i)
+        else: edge = 0
         
         offset = averages[i]/600
+        difference = averages[i] - averages[window - edge]
+        perc = (difference/averages[i])*100
 
-        if(f1.concavity > 0.3):
+        print(f1.concavity)
+        print(i)
+        print("----------")
+        if(f1.concavity > 0.4):
             if price < triple_averages[i]:
                 self.run = 0
                 return 10
-        if(f1.concavity < -0.3):
+        if(f1.concavity < -0.4):
             if price > triple_averages[i]:
                 self.run = 0
                 return -2
 
         # day trade, when done buy all stock possible
         # TODO: adjust avg slope reqs based on price
-        # TODO: Only sell for a profit?
+        # TODO: Only sell for a profit? !!!
 
         self.run += 1
         if(f3.avg_slope < 0.02):
@@ -58,22 +67,12 @@ class Portfolio:
 
 
 
-        # peaks / troughs, maybe need to sort by average concavity
-
-
-
-
-
-
-            
-        
 
 
     def Order(self, value, n):
         """ Executes a buy order of n shares if value = 2, a sell order of
             n shares if value = 0, and holds the shares if value = 1.
         """
-
 
         # buy n
         if value == 0:
@@ -129,6 +128,7 @@ class MovingAverage:
         self.portfolio = portfolio
         self.percent_difference = 0
 
+        self.edge =  0
         self.slope = 0
         self.slope_sum = 0
         self.avg_slope = 0
@@ -148,17 +148,17 @@ class MovingAverage:
         """ Calculates the value for the moving average over the last (window) days """
         
         if i < (window - 1):
-            edge = window - (i + 1)
-        else: edge = 0
+            self.edge = window - (i + 1)
+        else: self.edge = 0
         
         if i == 0:
             value_sum = price
         else:
             value_sum = 0
-            for n in range(window - edge):
+            for n in range(window - self.edge):
                 value_sum += value_list[i - n]
             
-        return value_sum/(window - edge)
+        return value_sum/(window - self.edge)
     
     def GetInfo(self, function, window):
         """ Gets the slope and concavity information """
@@ -273,7 +273,7 @@ while True:
         moving_triple.GetInfo(triple_averages, 20)
 
         # decide if we buy, sell, or hold
-        value = portfolio.Decide(moving_average, moving_double, moving_triple)
+        value = portfolio.Decide(moving_average, moving_double, moving_triple, window)
         portfolio.Order(value, 10)
     
     
