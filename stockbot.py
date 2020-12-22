@@ -24,34 +24,33 @@ class Portfolio:
         self.portfolio_value = self.capital + self.shares*self.initial_price
         self.run = 0
 
-    def Decide(self, f1, f2, f3, window):
-        
+    def Decide(self, f1, f2, f3, window):   
+
         if i < (window):
             edge = window - (i)
         else: edge = 0
         
-        offset = averages[i]/600
+        offset = averages[i]/100
         difference = averages[i] - averages[window - edge]
         perc = (difference/averages[i])*100
 
-        print(f1.concavity)
-        print(i)
-        print("----------")
-        if(f1.concavity > 0.4):
+
+        if(f1.concavity > 0.2):
             if price < triple_averages[i]:
                 self.run = 0
                 return 10
-        if(f1.concavity < -0.4):
+        if(f1.concavity < -0.2):
             if price > triple_averages[i]:
                 self.run = 0
                 return -2
 
         # day trade, when done buy all stock possible
-        # TODO: adjust avg slope reqs based on price
+        # TODO: only buy after done day trading, not after a peak
         # TODO: Only sell for a profit? !!!
 
-        self.run += 1
-        if(f3.avg_slope < 0.02):
+        if(f1.slope > -0.05):
+            self.run += 1
+        if(f3.avg_slope < 0.05):
             if(f3.concavity) < 0:
                 if price > averages[i] + offset:
                     if(f1.avg_slope < 0.05):
@@ -60,7 +59,7 @@ class Portfolio:
             else:
                 if price < averages[i] - offset:
                     if(f1.avg_slope > 0):
-                        if(f1.concavity > -0.2):
+                        if(f1.concavity > -0.05):
                             self.run = 0
                             return 0
         return self.run
@@ -93,7 +92,7 @@ class Portfolio:
             plt.plot([i], [price], marker='o', markersize=4, color="red")
 
         # buy all
-        if value == 10:
+        if value == 3:
             counter = 0  
             while self.capital >= price:
                 self.capital -= price
@@ -224,7 +223,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2010-11-05",  end="2020-12-11")
+    price_history = ticker_info.history(start="2017-11-05",  end="2020-12-11")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -263,12 +262,12 @@ while True:
         prices.append(price)
         
         # calculate the current moving average and add it to the list of moving averages
-        window = 30
+        window = 40
         averages.append(moving_average.CalculateAverage(prices, window))
         double_averages.append(moving_double.CalculateAverage(averages, window))
         triple_averages.append(moving_triple.CalculateAverage(double_averages, window))
         
-        moving_average.GetInfo(averages, 10)
+        moving_average.GetInfo(averages, 20)
         moving_double.GetInfo(double_averages, 20)
         moving_triple.GetInfo(triple_averages, 20)
 
