@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 
 class Portfolio:
+   
     """ Stock portfolio 
     
     Holds information about current buying power, equity, and overall value.
@@ -14,63 +15,51 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
+        
     """
-
+       
     def __init__(self, capital, shares, initial_price): 
-        """Inits a Portfolio object""" 
+        """ Inits a Portfolio object """
+
         self.capital = capital
         self.shares = shares
         self.initial_price = initial_price
         self.portfolio_value = self.capital + self.shares*self.initial_price
         self.run = 0
 
+
     def Decide(self, f1, f2, f3, window):   
+        """ 
+            This is where the script decides to Buy, Sell, or Hold.
+            return 3: Buy
+            return -1: Sell
 
-        if i < (window):
-            edge = window - (i)
-        else: edge = 0
-        
-        offset = averages[i]/100
-        difference = averages[i] - averages[window - edge]
-        perc = (difference/averages[i])*100
+         """
 
-
-        if(f1.concavity > 0.2):
-            if price < triple_averages[i]:
+        # concavity checks
+        if(f1.concavity > 0.3):
+            if price < f3.averages[i]:
                 self.run = 0
-                return 10
-        if(f1.concavity < -0.2):
-            if price > triple_averages[i]:
+                return 3
+        if(f1.concavity < -0.1):
+            if price > f3.averages[i]:
                 self.run = 0
-                return -2
+                return -1
 
-        # day trade, when done buy all stock possible
-        # TODO: only buy after done day trading, not after a peak
         # TODO: Only sell for a profit? !!!
 
-        if(f1.slope > -0.05):
+        if(f1.slope > -0.1):
             self.run += 1
-        if(f3.avg_slope < 0.05):
-            if(f3.concavity) < 0:
-                if price > averages[i] + offset:
-                    if(f1.avg_slope < 0.05):
-                        self.run = 0
-                        return -1
-            else:
-                if price < averages[i] - offset:
-                    if(f1.avg_slope > 0):
-                        if(f1.concavity > -0.05):
-                            self.run = 0
-                            return 0
         return self.run
 
 
 
-
-
     def Order(self, value, n):
-        """ Executes a buy order of n shares if value = 2, a sell order of
-            n shares if value = 0, and holds the shares if value = 1.
+        """ 
+        Executes a buy order of n shares if value = 0, a sell order of
+        n shares if value = -1, a sell max order if value = -2, and a 
+        buy max order if value = 3.
+
         """
 
         # buy n
@@ -117,17 +106,30 @@ class Portfolio:
 class MovingAverage:
     """ Moving Average 
     
-    Calculates the moving average of a stock proce at a given time.
+    An object used to represent a moving average function.
 
+    Attributes:
+        averages: the list of average values at each point
+        percent_difference: the percent difference between the price and the current point
+        slope: the slope at the current point
+        slope_sum: the sum of the slopes over the interval (window)
+        avg_slope: the average slope over the interval (window)
+        slopes: a list to hold the slopes
+        concavity: the value for the concavity (2nd derivative) at the current point
+        concavity_sum: the sum of the concavities over the interval (window)
+        avg_concavity: the average concavity over the interval (window)
+        concavities: a list to hold the concavities
+        above: a bool to tell whether the proce is above or below the current point
+        flipped: a bool that is True for one day after the price flips over the function
+        edge: variable to account for the beginning of the dataset
 
     """
 
-    def __init__(self, portfolio):
+    def __init__(self):
         """ Inits a MovingAverage object """  
-        self.portfolio = portfolio
+        
+        self.averages = []
         self.percent_difference = 0
-
-        self.edge =  0
         self.slope = 0
         self.slope_sum = 0
         self.avg_slope = 0
@@ -136,20 +138,27 @@ class MovingAverage:
         self.concavity_sum = 0
         self.avg_concavity = 0
         self.concavities = []
-
         self.above = False
         self.flipped = False
-        self.runcrash = False
+        self.edge =  0
 
 
     def CalculateAverage(self, value_list, window):
 
-        """ Calculates the value for the moving average over the last (window) days """
+        """ Calculates the value for the moving average over the last (window) days
         
+            Attributes:
+                value_list: the list of values of which the average will be calculated
+                window: the interval over which to calculate the average value
+
+         """
+        
+        # account for the beginning of the dataset
         if i < (window - 1):
             self.edge = window - (i + 1)
         else: self.edge = 0
         
+        # calculate the average value over the interval
         if i == 0:
             value_sum = price
         else:
@@ -159,16 +168,22 @@ class MovingAverage:
             
         return value_sum/(window - self.edge)
     
-    def GetInfo(self, function, window):
-        """ Gets the slope and concavity information """
+
+
+    def Update(self, window):
+        """ Updates the indicators used for building the algorithm
         
+            Attributes:
+                window: the interval over which to calculate the indicators.
+        
+        """
         # percent deviation from the mean
-        difference = price - function[i]
-        self.percent_difference = difference/function[i]
+        difference = price - self.averages[i]
+        self.percent_difference = difference/self.averages[i]
 
         # calculate slope
         if i > 1:
-            self.slope = function[i] - function[i - 1]
+            self.slope = self.averages[i] - self.averages[i - 1]
 
         # calculate average slope and concavity
         self.slopes.append(self.slope)
@@ -195,7 +210,7 @@ class MovingAverage:
 
 
         # check if we flip over average line
-        if price > function[i]:
+        if price > self.averages[i]:
             if self.above == False: 
                 self.above = True
                 self.flipped = True
@@ -223,15 +238,12 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2017-11-05",  end="2020-12-11")
+    price_history = ticker_info.history(start="2018-11-05",  end="2020-12-11")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
     opens = price_history['Open']
     closes = price_history['Close']
-    averages = []
-    double_averages = []
-    triple_averages = []
     prices = []
 
     # calculates the inital price of the stock, and 
@@ -248,31 +260,33 @@ while True:
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
 
-    # object to track moving averages
-    moving_average = MovingAverage(portfolio)
-    moving_double = MovingAverage(portfolio)
-    moving_triple = MovingAverage(portfolio)
+    # objects to track moving averages
+    f1 = MovingAverage()
+    f2 = MovingAverage()
+    f3 = MovingAverage()
 
 
     # iterate over the history of the stock
     for i in range(days):
         
-        # calculate the daily average proce and add it to the list of prices
+        # create a list of the closing prices
         price = closes[i]
         prices.append(price)
         
-        # calculate the current moving average and add it to the list of moving averages
+        # calculate the current moving averages
         window = 40
-        averages.append(moving_average.CalculateAverage(prices, window))
-        double_averages.append(moving_double.CalculateAverage(averages, window))
-        triple_averages.append(moving_triple.CalculateAverage(double_averages, window))
+        f1.averages.append(f1.CalculateAverage(prices, window))
+        f2.averages.append(f2.CalculateAverage(f1.averages, window))
+        f3.averages.append(f3.CalculateAverage(f2.averages, window))
         
-        moving_average.GetInfo(averages, 20)
-        moving_double.GetInfo(double_averages, 20)
-        moving_triple.GetInfo(triple_averages, 20)
+        # update the functions
+        small_window = int(window/2)
+        f1.Update(small_window)
+        f2.Update(small_window)
+        f3.Update(small_window)
 
         # decide if we buy, sell, or hold
-        value = portfolio.Decide(moving_average, moving_double, moving_triple, window)
+        value = portfolio.Decide(f1, f2, f3, window)
         portfolio.Order(value, 10)
     
     
@@ -292,9 +306,9 @@ while True:
     # plot the price history and moving average history
     x = list(range(0, days))
     plt.plot(x, prices)
-    plt.plot(x, averages)
-    plt.plot(x, double_averages)
-    plt.plot(x, triple_averages)
+    plt.plot(x, f1.averages)
+    plt.plot(x, f2.averages)
+    plt.plot(x, f3.averages)
     plt.show()
 
 
