@@ -37,11 +37,12 @@ class Portfolio:
          """
 
         # concavity checks
-        if(f1.concavity > 0.3):
-            if price < f3.averages[i]:
-                self.run = 0
-                return 3
-        if(f1.concavity < -0.1):
+        if(f2.concavity < -0.1):
+            if price < f1.averages[i]:
+                if price < f3.averages[i]:
+                    self.run = 0
+                    return 0
+        if(f1.concavity < -0.2):
             if price > f3.averages[i]:
                 self.run = 0
                 return -1
@@ -238,7 +239,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2018-11-05",  end="2020-12-11")
+    price_history = ticker_info.history(start="2017-01-01",  end="2020-12-20")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -303,12 +304,20 @@ while True:
     print("Returns: " + str(algo_value - entry_price))
     print(" ")
 
+    plt.plot([0], [prices[0]], marker='o', markersize=4, color="red", label="Sell Point")
+    plt.plot([0], [prices[0]], marker='o', markersize=4, color="limegreen", label="Buy Point")
+
     # plot the price history and moving average history
     x = list(range(0, days))
     plt.plot(x, prices)
-    plt.plot(x, f1.averages)
-    plt.plot(x, f2.averages)
-    plt.plot(x, f3.averages)
+    plt.title(ticker)
+    plt.xlabel("Days")
+    plt.ylabel("Price")
+    plt.legend()
+    
+#    plt.plot(x, f1.averages)
+#    plt.plot(x, f2.averages)
+#    plt.plot(x, f3.averages)
     plt.show()
 
 
