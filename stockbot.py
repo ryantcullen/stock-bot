@@ -253,7 +253,7 @@ while True:
     days = opens.size
 
     # initialize figure for plottingexit
-    fig = plt.figure()
+    fig, ax = plt.subplots()
 
     # initialize the portfolio and moving average objects
     starting_capital = 0
