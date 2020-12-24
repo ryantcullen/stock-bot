@@ -296,12 +296,12 @@ while True:
     algo_value = portfolio.PortfolioValue()
 
     print(" ")
-    print("Capital: " + str(portfolio.capital))
-    print("Shares: " + str(portfolio.shares))
-    print("Buy and Hold portfolio value: " + str(control_value))
-    print("Returns: " + str(control_value - entry_price))
-    print("Algorithm portfolio value: " + str(algo_value))
-    print("Returns: " + str(algo_value - entry_price))
+    print(f"Capital: {portfolio.capital:,.2f}")
+    print(f"Shares: {portfolio.shares:,.2f}")
+    print(f"Buy and Hold portfolio value: {control_value:,.2f}")
+    print(f"Returns: {(control_value - entry_price):,.2f}")
+    print(f"Algorithm portfolio value:  {algo_value:,.2f}")
+    print(f"Returns: {(algo_value - entry_price):,.2f}")
     print(" ")
 
     plt.plot([0], [prices[0]], marker='o', markersize=4, color="red", label="Sell Point")
@@ -319,8 +319,3 @@ while True:
 #    plt.plot(x, f2.averages)
 #    plt.plot(x, f3.averages)
     plt.show()
-
-
-    
-
-
