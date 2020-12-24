@@ -96,7 +96,7 @@ class Portfolio:
             self.shares = 0
             plt.plot([i], [price], marker='o', markersize=4, color="red")
     
-    def PortoflioValue(self):
+    def PortfolioValue(self):
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
 
@@ -293,7 +293,7 @@ while True:
     
     # did we win?
     control_value = starting_capital + (prices[days - 1] * starting_shares)
-    algo_value = portfolio.PortoflioValue()
+    algo_value = portfolio.PortfolioValue()
 
     print(" ")
     print("Capital: " + str(portfolio.capital))
