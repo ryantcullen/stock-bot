@@ -4,7 +4,7 @@ StockBot is a Python script for designing and testing your own daily stock tradi
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install matplotlib and yfinance.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install matplotlib and yfinance from your command line.
 
 ```bash
 pip install matplotlib
