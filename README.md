@@ -12,7 +12,7 @@ pip install yfinance
 ```
 
 ## Usage
-Enter the following into your command line while in the directory of the repository.
+Run the script form the command line:
 ```
 python stockbot.py
 ```
