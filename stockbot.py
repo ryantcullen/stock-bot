@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 """
-      Author : Ryan Cullen
+      Author : Ryan T Cullen
 """
 
 class Portfolio:
