@@ -1,6 +1,6 @@
 # StockBot
 
-StockBot is a Python script for designing and testing daily stock trading algorithms.
+StockBot is a Python script for designing and testing your own daily stock trading algorithms.
 
 ## Installation
 
