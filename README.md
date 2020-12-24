@@ -12,10 +12,6 @@ pip install yfinance
 ```
 
 ## Usage
-Run the script form the command line:
-```
-python stockbot.py
-```
 You will be asked to enter a ticker for the stock that you want to test the algorithm on.
 
 ## Contributing
