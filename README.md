@@ -15,7 +15,7 @@ pip install yfinance
 You will be asked to enter a ticker for the stock that you want to test the algorithm on.
 
 ## Results
-The aglorithm's success is judged by comparing the returns to a simple Buy-and-Hold strategy. Here are some results based on the last 3 years fo close prices:
+The aglorithm's success is judged by comparing the returns to a simple Buy-and-Hold strategy. Here are some results based on the last 3 years of close prices:
 
 BABA
 
