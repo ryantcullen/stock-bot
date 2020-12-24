@@ -15,6 +15,7 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
+        run: a coutner to check if we are on a runup
         
     """
        
