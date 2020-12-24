@@ -16,7 +16,7 @@ Run the script form the command line:
 ```
 python stockbot.py
 ```
-You will be asked to enter a ticker for the stock that you wish to test the algorithm on.
+You will be asked to enter a ticker for the stock that you want to test the algorithm on.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
