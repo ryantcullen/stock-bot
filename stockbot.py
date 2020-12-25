@@ -35,8 +35,6 @@ class Portfolio:
     def Decide(self, f1, f2, f3, window):   
         """ 
             This is where the script decides to Buy, Sell, or Hold.
-            return 3: Buy
-            return -1: Sell
 
          """
 
