@@ -6,6 +6,7 @@ import math
 from datetime import date
 from termcolor import colored
 
+
 class Portfolio:
    
     """ Stock portfolio 
@@ -17,7 +18,7 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
-        
+        run: a counter to check if we are on a runup
     """
        
     def __init__(self, capital, shares, initial_price): 
@@ -38,7 +39,6 @@ class Portfolio:
             return -1: Sell
 
          """
-
         # concavity checks
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
@@ -232,20 +232,26 @@ class MovingAverage:
                 self.flipped = True
             else: self.flipped = False
 
-def run_algo(ticker, starting_capital, starting_shares):
+def run_algo(ticker, starting_capital, starting_shares, start_date="2017-01-01", end_date="2020-12-24"):
     # get ticker information and price history
-    ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2017-01-01",  end="2020-12-24")
+    ticker_info = type(ticker) == str and yf.Ticker(ticker) or None
+    price_history = ticker_info and ticker_info.history(start=start_date,  end=end_date)
+ 
+    if not ticker_info:
+        price_history = ticker
+
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
     opens = price_history['Open']
     closes = price_history['Close']
     prices = []
-
     # calculates the inital price of the stock, and 
     # the number of days we are looking back in history
     global price
-    price = closes[0]
+    for close in closes:
+        if not math.isnan(close):
+            price = close
+            break
     days = opens.size
 
     # initialize figure for plottingexit
@@ -259,7 +265,6 @@ def run_algo(ticker, starting_capital, starting_shares):
     f1 = MovingAverage()
     f2 = MovingAverage()
     f3 = MovingAverage()
-
 
     # iterate over the history of the stock
     for j in range(days):
@@ -301,7 +306,8 @@ def run_algo(ticker, starting_capital, starting_shares):
 Buy/Sell Decisions for today
 
 """
-watchlist = ['BABA', 'IBM', 'PEN', 'GOOG', 'SPCE', 'AMD', 'NIO', 'ARKG', 'PENN', 'MRNA', 'WMT', 'AAPL', 'SBUX', 'NKE', 'SNE']
+watchlist = ['BABA', 'IBM', 'PEN', 'GOOG', 'SPCE', 'AMD', 'NIO', 'ARKG', 'PENN', 'MRNA', 'WMT', 'AAPL', 'SBUX', 'NKE', 'SNE', 'ZS', 'FTNT', 'QLYS', 'CRWD', 'MIME'
+, 'DIS', 'BA', 'SNAP']
 
 """
 Main Loop
@@ -316,14 +322,32 @@ while True:
     if ticker == 'exit':
         break
     elif ticker == 'today':
+        order_table = {}
+        today = date.today()
+        last_year = date(today.year-1, today.month, today.day)
+        data = yf.download(tickers = watchlist, period = "1y", group_by = 'ticker')
         for ticker in watchlist:
-            portfolio, entry_price, control_value, algo_value, prices, days = run_algo(ticker, starting_capital, starting_shares)
+            portfolio, entry_price, control_value, algo_value, prices, days = run_algo(data[ticker], starting_capital, starting_shares,start_date=last_year, end_date=today)
             order_today = portfolio.Orders[days-1]
             highlight_color = order_today['Type'] == "Buy" and 'green' or order_today['Type'] == "Sell" and 'red' or 'white'
             performance = math.floor( (algo_value-entry_price)/entry_price*100 )
+            order_table[ticker] = {
+                "Type" : order_today['Type'],
+                "Day": order_today['Day'],
+                "Current performance" : performance
+            }
             print(ticker,colored( order_today, highlight_color), "Current performance: "+ (algo_value >= entry_price and "+%" or algo_value < entry_price and "-%")+ str(performance))
             plt.close()
-           
+        fig, ax = plt.subplots()
+        ax.set_axis_off()
+        ax_table = ax.table(
+             cellText=[ [v[j] for j in v]  for i, v in order_table.items()],
+             rowLabels=[i for i in order_table],
+             colLabels=['Type', 'Day', 'Current performance'],
+             cellLoc='center',
+             loc='upper left',
+        )
+        plt.show()
            
     else:
         portfolio, entry_price, control_value, algo_value, prices, days = run_algo(ticker, starting_capital, starting_shares)
