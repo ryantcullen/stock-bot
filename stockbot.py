@@ -41,18 +41,10 @@ class Portfolio:
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
                 if price < f3.averages[i]:
-                    self.run = 0
                     return 0
         if(f1.concavity < -0.2):
             if price > f3.averages[i]:
-                self.run = 0
                 return -1
-
-        # TODO: Only sell for a profit? !!!
-
-        if(f1.slope > -0.1):
-            self.run += 1
-        return self.run
 
 
 
@@ -240,7 +232,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2017-01-01",  end="2020-12-20")
+    price_history = ticker_info.history(start="2000-01-01",  end="2020-12-20")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
