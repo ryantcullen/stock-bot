@@ -3,6 +3,9 @@ import pandas as _pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+      Author : Ryan T Cullen
+"""
 
 class Portfolio:
    
@@ -15,7 +18,7 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
-        run: a coutner to check if we are on a runup
+        run: a counter to check if we are on a runup
         
     """
        
@@ -32,8 +35,6 @@ class Portfolio:
     def Decide(self, f1, f2, f3, window):   
         """ 
             This is where the script decides to Buy, Sell, or Hold.
-            return 3: Buy
-            return -1: Sell
 
          """
 
