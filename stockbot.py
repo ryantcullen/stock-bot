@@ -3,6 +3,11 @@ import pandas as _pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+        Author: Ryan Cullen
+"""
+
+
 
 class Portfolio:
    
