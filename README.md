@@ -18,8 +18,7 @@ You will be asked to enter a ticker for the stock that you want to test the algo
 
 If you want to modify the algorithm and design your own, you only need to change the Decide() method. That method takes three functions, and you can decide what those are or design your own inputs. My implementation uses moving averages and their derivatives/concavity (the class for which is set up for you to use in your own algorithm).
 
-## Roadmap
-The goal for this script is of course for it to be as robust and generalized as possible. To do this, one idea is to use Reinforcement Learning to fine tune the thresholds on the fly. If you have experience with ML or deep learning I very much encourage you to make conributions!!
+The goal for this script is of course for it to be as robust and generalized as possible. Add features according to whatever that means to you and submit a pull request to the feature-test branch. If if adds value to the project it will be accepted and merged. 
 
 
 ## Contributing
