@@ -23,7 +23,6 @@ class Portfolio:
     Attributes:
         capital: starting cash
         shares: starting number of shares
-        initial_price: the initial price of the stock
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets
 
     Funtions:
@@ -32,13 +31,12 @@ class Portfolio:
         
     """
        
-    def __init__(self, capital, shares, initial_price): 
+    def __init__(self, capital, shares): 
         """ Inits a Portfolio object """
 
         self.capital = capital
         self.shares = shares
-        self.initial_price = initial_price
-        self.portfolio_value = self.capital + self.shares*self.initial_price
+        self.portfolio_value = self.capital + self.shares*price
 
 
     def Decide(self, f1, f2, f3, window):   
@@ -255,7 +253,7 @@ while True:
     starting_capital = 0
     starting_shares = 100
     entry_price = starting_shares * price
-    portfolio = Portfolio(starting_capital, starting_shares, price)
+    portfolio = Portfolio(starting_capital, starting_shares)
 
     # objects to track moving averages
     f1 = MovingAverage()
