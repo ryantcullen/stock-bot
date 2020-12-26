@@ -19,11 +19,13 @@ You will be asked to enter a ticker for the stock that you want to test the algo
 If you want to modify the algorithm and design your own, you only need to change the Decide() method. That method takes three functions, and you can decide what those are or design your own inputs. My implementation uses moving averages and their derivatives/concavity (the class for which is set up for you to use in your own algorithm).
 
 ## Roadmap
-The goal for this script is of course for it to be as robust and generalized as possible. To do this, one idea is to use Reinforcement Learning to fine tune the thresholds on the fly. If you have experience with ML or deep learning I very much encourage you to make conributions!!
 
+What I'm working on right now: The Kelly Criterion is an equation that lets you determine the optimal position size for a given play. I think this is very valuable information for any investor and I am working on making it available for use in the design of an algorithm.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+The goal for this script is of course for it to be as robust and generalized as possible in terms of the data available for the user to use to design an algorithm. Add features according to whatever that means to you and submit a pull request to the feature-test branch. If if adds value to the project it will be accepted and merged. 
 
 Please make sure to update tests as appropriate.
 
