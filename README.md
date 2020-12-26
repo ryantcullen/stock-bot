@@ -20,8 +20,6 @@ If you want to modify the algorithm and design your own, you only need to change
 
 ## Roadmap
 
-The goal here is to make this as robust and generalized as possible. Any features you want to add that bring functionality/more data for the user to design an algorithm are welcome. If it is well written and stylized it will be merged.
-
 What I'm working on right now: The Kelly Criterion is an equation that lets you determine the optimal position size for a given play. I think this is very valuable information for any investor and I am working on making it available for use in the design of an algorithm.
 
 ## Contributing
