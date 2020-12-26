@@ -6,6 +6,13 @@ import math
 from datetime import date
 from termcolor import colored
 
+"""
+        Author: Ryan Cullen
+
+        test
+"""
+
+
 
 class Portfolio:
    
@@ -43,18 +50,10 @@ class Portfolio:
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
                 if price < f3.averages[i]:
-                    self.run = 0
                     return 0
         if(f1.concavity < -0.2):
             if price > f3.averages[i]:
-                self.run = 0
                 return -1
-
-        # TODO: Only sell for a profit? !!!
-
-        if(f1.slope > -0.1):
-            self.run += 1
-        return self.run
 
 
 
@@ -100,7 +99,7 @@ class Portfolio:
 
             plt.plot([i], [price], marker='o', markersize=4, color="red")
 
-        self.Orders.insert(i, dict(Type = value < 0 and "Sell" or (value == 0 or value == 3) and "Buy" or "Hold" , Day = date ))
+        self.Orders.insert(i, dict(Type = value and ( value < 0 and "Sell" or (value == 0 or value == 3) and "Buy") or "Hold" , Day = date ))
         
     
     
