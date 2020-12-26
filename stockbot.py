@@ -1,11 +1,18 @@
 import yfinance as yf
 import pandas as _pd
 import numpy as np
+import enum 
 import matplotlib.pyplot as plt
 
 """
-      Author : Ryan T Cullen
+        Author: Ryan Cullen
 """
+
+class Decisions(enum.Enum):
+    sell = -1
+    hold = 0
+    buy = 1
+    
 
 class Portfolio:
    
@@ -18,7 +25,9 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
-        run: a counter to check if we are on a runup
+
+    Funtions:
+        Decide(): This is where the logic of when to buy, sell, or hold should go. You can return 
         
     """
        
@@ -29,68 +38,65 @@ class Portfolio:
         self.shares = shares
         self.initial_price = initial_price
         self.portfolio_value = self.capital + self.shares*self.initial_price
-        self.run = 0
 
 
     def Decide(self, f1, f2, f3, window):   
         """ 
-            This is where the script decides to Buy, Sell, or Hold.
+            This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here.
 
+            Returns a tuple consisting of:
+                - a decision
+                - a number of shares (If you want to sell/buy maximum shares, return -1 for this value)
+                    
+                (eg: return Decisions.buy, 20)
          """
 
         # concavity checks
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
                 if price < f3.averages[i]:
-                    return 0
+                    return Decisions.buy, -1
         if(f1.concavity < -0.2):
             if price > f3.averages[i]:
-                return -1
+                return Decisions.sell, -1
+        
+        return Decisions.hold, 0
 
 
 
-    def Order(self, value, n):
-        """ 
-        Executes a buy order of n shares if value = 0, a sell order of
-        n shares if value = -1, a sell max order if value = -2, and a 
-        buy max order if value = 3.
+    def Order(self, decision, n):
+        """ Used to execute a buy/sell order of n shares, or a buy/sell max order."""
 
-        """
+        # plot a dot for buy or sell
+        if decision.value > 0:
+            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+        elif decision.value < 0:
+            plt.plot([i], [price], marker='o', markersize=4, color="red")
 
         # buy n
-        if value == 0:
+        if decision == Decisions.buy:
             counter = 0  
             while self.capital >= price:
                 self.capital -= price
+                self.shares += 1
                 counter += 1
                 if counter == n:
                     break
-            self.shares += counter
-            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
-
+            
         # sell n
-        elif value == -1:
-            if self.shares > n:
-                self.capital += n*price
-                self.shares -= n
-            plt.plot([i], [price], marker='o', markersize=4, color="red")
-
-        # buy all
-        if value == 3:
+        elif decision == Decisions.sell:
             counter = 0  
-            while self.capital >= price:
-                self.capital -= price
+            while self.shares > 0:
+                self.capital += price
+                self.shares -= 1
                 counter += 1
-            self.shares += counter
-            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+                if counter == n:
+                    break
 
-        # sell all
-        elif value == -2:
-            self.capital += self.shares*price
-            self.shares = 0
-            plt.plot([i], [price], marker='o', markersize=4, color="red")
     
+
     def PortfolioValue(self):
+        """ Returns the current total monetary value of the portfolio. """
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
 
@@ -233,7 +239,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2000-01-01",  end="2020-12-20")
+    price_history = ticker_info.history(start="2017-01-01",  end="2020-12-20")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -281,8 +287,8 @@ while True:
         f3.Update(small_window)
 
         # decide if we buy, sell, or hold
-        value = portfolio.Decide(f1, f2, f3, window)
-        portfolio.Order(value, 10)
+        decision, n = portfolio.Decide(f1, f2, f3, window)
+        portfolio.Order(decision, n)
     
     
     # did we win?
@@ -309,7 +315,7 @@ while True:
     plt.ylabel("Price")
     plt.legend()
     
-#    plt.plot(x, f1.averages)
-#    plt.plot(x, f2.averages)
-#    plt.plot(x, f3.averages)
+    plt.plot(x, f1.averages)
+    plt.plot(x, f2.averages)
+    plt.plot(x, f3.averages)
     plt.show()
