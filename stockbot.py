@@ -2,6 +2,9 @@ import yfinance as yf
 import pandas as _pd
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+from datetime import date
+from termcolor import colored
 
 """
         Author: Ryan Cullen
@@ -22,8 +25,7 @@ class Portfolio:
         shares: starting number of shares.
         initial_price: the initial price of the stock.
         portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
-        run: a coutner to check if we are on a runup
-        
+        run: a counter to check if we are on a runup
     """
        
     def __init__(self, capital, shares, initial_price): 
@@ -34,6 +36,7 @@ class Portfolio:
         self.initial_price = initial_price
         self.portfolio_value = self.capital + self.shares*self.initial_price
         self.run = 0
+        self.Orders = []
 
 
     def Decide(self, f1, f2, f3, window):   
@@ -43,7 +46,6 @@ class Portfolio:
             return -1: Sell
 
          """
-
         # concavity checks
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
@@ -55,7 +57,7 @@ class Portfolio:
 
 
 
-    def Order(self, value, n):
+    def Order(self, value, n, date):
         """ 
         Executes a buy order of n shares if value = 0, a sell order of
         n shares if value = -1, a sell max order if value = -2, and a 
@@ -94,8 +96,15 @@ class Portfolio:
         elif value == -2:
             self.capital += self.shares*price
             self.shares = 0
+
             plt.plot([i], [price], marker='o', markersize=4, color="red")
+
+        self.Orders.insert(i, dict(Type = value and ( value < 0 and "Sell" or (value == 0 or value == 3) and "Buy") or "Hold" , Day = date ))
+        
     
+    
+    
+
     def PortfolioValue(self):
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
@@ -222,42 +231,32 @@ class MovingAverage:
                 self.flipped = True
             else: self.flipped = False
 
-
-
-
-"""
-Main Loop
-
-"""
-
-while True:
-
-    # input a ticker to track
-    ticker = input("Enter ticker: ")
-    if ticker == 'exit':
-        break
-
+def run_algo(ticker, starting_capital, starting_shares, start_date="2017-01-01", end_date="2020-12-24"):
     # get ticker information and price history
-    ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2000-01-01",  end="2020-12-20")
+    ticker_info = type(ticker) == str and yf.Ticker(ticker) or None
+    price_history = ticker_info and ticker_info.history(start=start_date,  end=end_date)
+ 
+    if not ticker_info:
+        price_history = ticker
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
     opens = price_history['Open']
     closes = price_history['Close']
     prices = []
-
     # calculates the inital price of the stock, and 
     # the number of days we are looking back in history
-    price = closes[0]
+    global price
+    for close in closes:
+        if not math.isnan(close):
+            price = close
+            break
     days = opens.size
 
     # initialize figure for plottingexit
     fig, ax = plt.subplots()
 
     # initialize the portfolio and moving average objects
-    starting_capital = 0
-    starting_shares = 100
     entry_price = starting_shares * price
     portfolio = Portfolio(starting_capital, starting_shares, price)
 
@@ -266,14 +265,15 @@ while True:
     f2 = MovingAverage()
     f3 = MovingAverage()
 
-
     # iterate over the history of the stock
-    for i in range(days):
-        
+    for j in range(days):
+        global i
+        i = j
         # create a list of the closing prices
-        price = closes[i]
+        price = closes[j]
+        pricedate = price_history.iloc[j].name
         prices.append(price)
-        
+  
         # calculate the current moving averages
         window = 40
         f1.averages.append(f1.CalculateAverage(prices, window))
@@ -288,34 +288,102 @@ while True:
 
         # decide if we buy, sell, or hold
         value = portfolio.Decide(f1, f2, f3, window)
-        portfolio.Order(value, 10)
+        portfolio.Order(value, 10, pricedate)
     
     
     # did we win?
     control_value = starting_capital + (prices[days - 1] * starting_shares)
     algo_value = portfolio.PortfolioValue()
 
-    print(" ")
-    print(f"Capital: {portfolio.capital:,.2f}")
-    print(f"Shares: {portfolio.shares:,.2f}")
-    print(f"Buy and Hold portfolio value: {control_value:,.2f}")
-    print(f"Returns: {(control_value - entry_price):,.2f}")
-    print(f"Algorithm portfolio value:  {algo_value:,.2f}")
-    print(f"Returns: {(algo_value - entry_price):,.2f}")
-    print(" ")
+    return portfolio, entry_price, control_value, algo_value, prices, days
 
-    plt.plot([0], [prices[0]], marker='o', markersize=4, color="red", label="Sell Point")
-    plt.plot([0], [prices[0]], marker='o', markersize=4, color="limegreen", label="Buy Point")
-
-    # plot the price history and moving average history
-    x = list(range(0, days))
-    plt.plot(x, prices)
-    plt.title(ticker)
-    plt.xlabel("Days")
-    plt.ylabel("Price")
-    plt.legend()
     
-#    plt.plot(x, f1.averages)
-#    plt.plot(x, f2.averages)
-#    plt.plot(x, f3.averages)
-    plt.show()
+
+
+
+"""
+Buy/Sell Decisions for today
+
+"""
+watchlist = ['BABA', 'IBM', 'PEN', 'GOOG', 'SPCE', 'AMD', 'NIO', 'ARKG', 'PENN', 'MRNA', 'WMT', 'AAPL', 'SBUX', 'NKE', 'SNE', 'ZS', 'FTNT', 'QLYS', 'CRWD', 'MIME'
+, 'DIS', 'BA', 'SNAP']
+
+"""
+Main Loop
+
+"""
+
+while True:
+    starting_capital = 0
+    starting_shares = 55
+    # input a ticker to track
+    ticker = input("Enter ticker: ")
+    if ticker == 'exit':
+        break
+    elif ticker == 'today':
+        order_table = {}
+        today = date.today()
+        last_year = date(today.year-1, today.month, today.day)
+        data = yf.download(tickers = watchlist, period = "1y", group_by = 'ticker')
+        for ticker in watchlist:
+            portfolio, entry_price, control_value, algo_value, prices, days = run_algo(data[ticker], starting_capital, starting_shares,start_date=last_year, end_date=today)
+            order_today = portfolio.Orders[days-1]
+            highlight_color = order_today['Type'] == "Buy" and 'green' or order_today['Type'] == "Sell" and 'red' or 'white'
+            performance = math.floor( (algo_value-entry_price)/entry_price*100 )
+            order_table[ticker] = {
+                "Type" : order_today['Type'],
+                "Day": order_today['Day'],
+                "Current performance" : performance
+            }
+            print(ticker,colored( order_today, highlight_color), "Current performance: "+ (algo_value >= entry_price and "+%" or algo_value < entry_price and "-%")+ str(performance))
+            plt.close()
+        fig, ax = plt.subplots()
+        ax.set_axis_off()
+        ax_table = ax.table(
+             cellText=[ [v[j] for j in v]  for i, v in order_table.items()],
+             rowLabels=[i for i in order_table],
+             colLabels=['Type', 'Day', 'Current performance'],
+             cellLoc='center',
+             loc='upper left',
+        )
+        plt.show()
+           
+    else:
+        portfolio, entry_price, control_value, algo_value, prices, days = run_algo(ticker, starting_capital, starting_shares)
+        print(" ")
+        print("Capital: $" + str( math.floor(portfolio.capital)))
+        print("Shares: " + str(portfolio.shares))
+        print("Starting portfolio value: $" + str(math.floor(entry_price)))
+        print("Buy and Hold portfolio value: $" + str(math.floor(control_value)))
+        print("Returns: $" + str(math.floor(control_value - entry_price)))
+        print("Algorithm portfolio value: $" + str(math.floor(algo_value)))
+        print("Returns: $" + str(math.floor(algo_value - entry_price)))
+        print(" ")
+        #print(portfolio.Orders)
+        #legends
+        plt.plot([0], [prices[0]], marker='o', markersize=4, color="red", label="Sell Point")
+        plt.plot([0], [prices[0]], marker='o', markersize=4, color="limegreen", label="Buy Point")
+
+        # plot the price history and moving average history
+        x = list(range(0, days))
+        plt.plot(x, prices)
+        plt.title(ticker)
+        plt.xlabel("Days")
+        plt.ylabel("Price")
+        plt.legend()
+        #plt.plot(x, f1.averages)
+        #plt.plot(x, f2.averages)
+        #plt.plot(x, f3.averages)
+
+        plt.show()
+         
+       
+
+
+       
+    
+
+
+    
+
+
