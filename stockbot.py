@@ -18,16 +18,17 @@ class Portfolio:
    
     """ Stock portfolio 
     
-    Holds information about current buying power, equity, and overall value.
+    Holds information about current buying power, equity, and overall value
 
     Attributes:
-        capital: starting cash.
-        shares: starting number of shares.
-        initial_price: the initial price of the stock.
-        portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets.
+        capital: starting cash
+        shares: starting number of shares
+        initial_price: the initial price of the stock
+        portfolio value: the overall value of the stock portfolio in $USD if the owner were to liquidate all assets
 
     Funtions:
-        Decide(): This is where the logic of when to buy, sell, or hold should go. You can return 
+        Decide(): This is where the logic of when to buy, sell, or hold should go
+        Order(): Used to execute a buy or sell order
         
     """
        
@@ -42,30 +43,25 @@ class Portfolio:
 
     def Decide(self, f1, f2, f3, window):   
         """ 
-            This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here.
-
-            Returns a tuple consisting of:
-                - a decision
-                - a number of shares (If you want to sell/buy maximum shares, return -1 for this value)
-                    
-                (eg: return Decisions.buy, 20)
+            This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here
          """
 
         # concavity checks
         if(f2.concavity < -0.1):
             if price < f1.averages[i]:
                 if price < f3.averages[i]:
-                    return Decisions.buy, -1
+                    self.Order(Decisions.buy)
+
         if(f1.concavity < -0.2):
             if price > f3.averages[i]:
-                return Decisions.sell, -1
+                self.Order(Decisions.sell)
         
-        return Decisions.hold, 0
+        else: self.Order(Decisions.hold)
 
 
 
-    def Order(self, decision, n):
-        """ Used to execute a buy/sell order of n shares, or a buy/sell max order."""
+    def Order(self, decision, n = -1):
+        """ Used to execute a buy/sell order of n shares, or a buy/sell max order """
 
         # plot a dot for buy or sell
         if decision.value > 0:
@@ -96,7 +92,7 @@ class Portfolio:
     
 
     def PortfolioValue(self):
-        """ Returns the current total monetary value of the portfolio. """
+        """ Returns the current total monetary value of the portfolio """
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
 
@@ -107,7 +103,7 @@ class Portfolio:
 class MovingAverage:
     """ Moving Average 
     
-    An object used to represent a moving average function.
+    An object used to represent a moving average function
 
     Attributes:
         averages: the list of average values at each point
@@ -175,7 +171,7 @@ class MovingAverage:
         """ Updates the indicators used for building the algorithm
         
             Attributes:
-                window: the interval over which to calculate the indicators.
+                window: the interval over which to calculate the indicators
         
         """
         # percent deviation from the mean
@@ -287,8 +283,7 @@ while True:
         f3.Update(small_window)
 
         # decide if we buy, sell, or hold
-        decision, n = portfolio.Decide(f1, f2, f3, window)
-        portfolio.Order(decision, n)
+        portfolio.Decide(f1, f2, f3, window)
     
     
     # did we win?
