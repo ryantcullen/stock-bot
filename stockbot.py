@@ -40,9 +40,7 @@ class Portfolio:
 
 
     def Decide(self, f1, f2, f3, window):   
-        """ 
-            This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here
-         """
+        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here """
 
         # concavity checks
         if(f2.concavity < -0.1):
@@ -59,7 +57,12 @@ class Portfolio:
 
 
     def Order(self, decision, n = -1):
-        """ Used to execute a buy/sell order of n shares, or a buy/sell max order """
+        """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n
+
+            decision: an element from the Decisions class
+            n: number of shares to order
+        
+        """
 
         # plot a dot for buy or sell
         if decision.value > 0:
@@ -86,6 +89,18 @@ class Portfolio:
                 counter += 1
                 if counter == n:
                     break
+    
+    def OptimalPosition(expected_return, prob_win, modifier):
+        """ Uses the Kelly Criterion to calculate the optimal position size for a given play
+
+            expected return: the expected value of the shares at the end of the play minus the value today
+            prob_win: the fractional probability that we will get our expected return
+            modifier: a value between 0 and 1; higher values make for a more aggressive bet
+        """
+        prob_lose = 1 - prob_win
+        fraction = ((expected_return * prob_win) - prob_lose) / expected_return
+        optimal_position = (self.capital * fraction) * modifier
+        return optimal_position
 
     
 
