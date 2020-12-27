@@ -52,11 +52,7 @@ class Portfolio:
         
         """
 
-        # plot a dot for buy or sell
-        if decision.value > 0:
-            plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
-        elif decision.value < 0:
-            plt.plot([i], [price], marker='o', markersize=4, color="red")
+        counter = 0
 
         # buy n
         if decision == Decisions.buy:
@@ -77,6 +73,15 @@ class Portfolio:
                 counter += 1
                 if counter == n:
                     break
+
+        # plot a dot for buy or sell
+        if counter > 0:
+            if decision.value > 0:
+                plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
+            elif decision.value < 0:
+                plt.plot([i], [price], marker='o', markersize=4, color="red")
+
+    
     
     def OptimalPosition(expected_return, prob_win, modifier):
         """ Uses the Kelly Criterion to calculate the optimal position size for a given play
