@@ -39,7 +39,7 @@ class Portfolio:
         self.portfolio_value = self.capital + self.shares*price
 
 
-    def Decide(self, f1, f2, f3, window):   
+    def Decide(self, f1, f2, f3):   
         """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here """
 
         
@@ -88,7 +88,7 @@ class Portfolio:
         prob_lose = 1 - prob_win
         fraction = ((expected_return * prob_win) - prob_lose) / expected_return
         optimal_position = (self.capital * fraction) * modifier
-        
+
         return optimal_position
 
     
@@ -237,7 +237,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="2017-01-01",  end="2020-12-20")
+    price_history = ticker_info.history(start="1990-01-01",  end="2020-12-20")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -263,6 +263,7 @@ while True:
     f1 = MovingAverage()
     f2 = MovingAverage()
     f3 = MovingAverage()
+    f4 = MovingAverage()
 
 
     # iterate over the history of the stock
@@ -273,19 +274,19 @@ while True:
         prices.append(price)
         
         # calculate the current moving averages
-        window = 40
-        f1.averages.append(f1.CalculateAverage(prices, window))
-        f2.averages.append(f2.CalculateAverage(f1.averages, window))
-        f3.averages.append(f3.CalculateAverage(f2.averages, window))
+        f1.averages.append(f1.CalculateAverage(prices, 10))
+        f2.averages.append(f2.CalculateAverage(prices, 50))
+        f3.averages.append(f3.CalculateAverage(prices, 100))
+        f4.averages.append(f4.CalculateAverage(prices, 200))
         
         # update the functions
-        small_window = int(window/2)
-        f1.Update(small_window)
-        f2.Update(small_window)
-        f3.Update(small_window)
+        f1.Update(10)
+        f2.Update(50)
+        f3.Update(100)
+        f4.Update(200)
 
         # decide if we buy, sell, or hold
-        portfolio.Decide(f1, f2, f3, window)
+        portfolio.Decide(f1, f2, f3)
     
     
     # did we win?
@@ -315,4 +316,5 @@ while True:
     plt.plot(x, f1.averages)
     plt.plot(x, f2.averages)
     plt.plot(x, f3.averages)
+    plt.plot(x, f4.averages)
     plt.show()
