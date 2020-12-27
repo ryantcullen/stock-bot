@@ -88,6 +88,7 @@ class Portfolio:
         prob_lose = 1 - prob_win
         fraction = ((expected_return * prob_win) - prob_lose) / expected_return
         optimal_position = (self.capital * fraction) * modifier
+        
         return optimal_position
 
     
