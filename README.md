@@ -1,6 +1,6 @@
-# StockBot
-
 Author: Ryan Cullen
+
+# StockBot
 
 StockBot is a Python script for designing and testing your own daily stock trading algorithms.
 
