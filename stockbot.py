@@ -42,19 +42,7 @@ class Portfolio:
     def Decide(self, f1, f2, f3, window):   
         """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here """
 
-        # concavity checks
-        if(f2.concavity < -0.1):
-            if price < f1.averages[i]:
-                if price < f3.averages[i]:
-                    self.Order(Decisions.buy)
-
-        if(f1.concavity < -0.2):
-            if price > f3.averages[i]:
-                self.Order(Decisions.sell)
         
-        else: self.Order(Decisions.hold)
-
-
 
     def Order(self, decision, n = -1):
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n
