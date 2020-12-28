@@ -28,4 +28,6 @@ The goal for this script is of course for it to be as robust and generalized as 
 
 Please make sure to update tests as appropriate.
 
+Thanks!  :)
+
 
