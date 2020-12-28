@@ -40,7 +40,12 @@ class Portfolio:
 
 
     def Decide(self, f1, f2, f3):   
-        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here """
+        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here
+        
+            Returns:
+                - an element from the Decisions class (eg. Decisions.buy)
+                - (optional) an integer number of shares to order; omit to order max amount of shares
+        """
 
         
 
@@ -48,7 +53,7 @@ class Portfolio:
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n
 
             decision: an element from the Decisions class
-            n: number of shares to order
+            n: (optional) the number of shares to order
         
         """
 
