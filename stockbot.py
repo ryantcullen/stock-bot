@@ -18,7 +18,7 @@ class Portfolio:
    
     """ Stock portfolio 
     
-    Holds information about current buying power, equity, and overall value
+    Holds information about current buying power, equity, and overall value.
 
     Attributes:
         capital: starting cash
@@ -40,17 +40,13 @@ class Portfolio:
 
 
     def Decide(self, f1, f2, f3):   
-        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here
-        
-            Returns:
-                - an element from the Decisions class (eg. Decisions.buy)
-                - (optional) an integer number of shares to order; omit to order max amount of shares
+        """ This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here using the Order() method to take actions.
         """
 
         
 
     def Order(self, decision, n = -1):
-        """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n
+        """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n.
 
             decision: an element from the Decisions class
             n: (optional) the number of shares to order
@@ -89,7 +85,7 @@ class Portfolio:
     
     
     def OptimalPosition(expected_return, prob_win, modifier):
-        """ Uses the Kelly Criterion to calculate the optimal position size for a given play
+        """ Uses the Kelly Criterion to calculate the optimal position size for a given play.
 
             expected return: the expected value of the shares at the end of the play minus the value today
             prob_win: the fractional probability that we will get our expected return
@@ -104,7 +100,7 @@ class Portfolio:
     
 
     def PortfolioValue(self):
-        """ Returns the current total monetary value of the portfolio """
+        """ Returns the current total monetary value of the portfolio. """
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
 
@@ -115,7 +111,7 @@ class Portfolio:
 class MovingAverage:
     """ Moving Average 
     
-    An object used to represent a moving average function
+    An class used to represent a moving average function.
 
     Attributes:
         averages: the list of average values at each point
@@ -135,7 +131,7 @@ class MovingAverage:
     """
 
     def __init__(self):
-        """ Inits a MovingAverage object """  
+        """ Inits a MovingAverage object. """  
         
         self.averages = []
         self.percent_difference = 0
@@ -154,7 +150,7 @@ class MovingAverage:
 
     def CalculateAverage(self, value_list, window):
 
-        """ Calculates the value for the moving average over the last (window) days
+        """ Calculates the value for the moving average over the last (window) days.
         
             Attributes:
                 value_list: the list of values of which the average will be calculated
@@ -180,7 +176,7 @@ class MovingAverage:
 
 
     def Update(self, window):
-        """ Updates the indicators used for building the algorithm
+        """ Updates the indicators for the moving average function.
         
             Attributes:
                 window: the interval over which to calculate the indicators
