@@ -39,17 +39,17 @@ class Portfolio:
         self.portfolio_value = self.capital + self.shares*price
 
 
-    def Decide(self, f1, f2, f3):   
-        """ This is where the script decides to Buy, Sell, or Hold. Desgin your algorithm logic here using the Order() method to take actions.
-        """
+    def Decide(self):   
+        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here. """
 
         
 
     def Order(self, decision, n = -1):
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n.
 
-            decision: an element from the Decisions class
-            n: (optional) the number of shares to order
+            Arguments:
+                decision: an element from the Decisions class
+                n: number of shares to order
         
         """
 
@@ -87,9 +87,10 @@ class Portfolio:
     def OptimalPosition(expected_return, prob_win, modifier):
         """ Uses the Kelly Criterion to calculate the optimal position size for a given play.
 
-            expected return: the expected value of the shares at the end of the play minus the value today
-            prob_win: the fractional probability that we will get our expected return
-            modifier: a value between 0 and 1; higher values make for a more aggressive bet
+            Arguments:
+                expected return: the expected value of the shares at the end of the play minus the value today
+                prob_win: the fractional probability that we will get our expected return
+                modifier: a value between 0 and 1; higher values make for a more aggressive bet
         """
         prob_lose = 1 - prob_win
         fraction = ((expected_return * prob_win) - prob_lose) / expected_return
@@ -100,7 +101,7 @@ class Portfolio:
     
 
     def PortfolioValue(self):
-        """ Returns the current total monetary value of the portfolio. """
+        """ Returns the current total monetary value of the portfolio """
         self.portfolio_value = self.capital + (self.shares*price)
         return self.portfolio_value
 
@@ -111,7 +112,7 @@ class Portfolio:
 class MovingAverage:
     """ Moving Average 
     
-    An class used to represent a moving average function.
+    An object used to represent a moving average function.
 
     Attributes:
         averages: the list of average values at each point
@@ -131,7 +132,7 @@ class MovingAverage:
     """
 
     def __init__(self):
-        """ Inits a MovingAverage object. """  
+        """ Inits a MovingAverage object """  
         
         self.averages = []
         self.percent_difference = 0
@@ -152,7 +153,7 @@ class MovingAverage:
 
         """ Calculates the value for the moving average over the last (window) days.
         
-            Attributes:
+            Arguments:
                 value_list: the list of values of which the average will be calculated
                 window: the interval over which to calculate the average value
 
@@ -176,9 +177,9 @@ class MovingAverage:
 
 
     def Update(self, window):
-        """ Updates the indicators for the moving average function.
+        """ Updates the indicators used for building the algorithm.
         
-            Attributes:
+            Arguments:
                 window: the interval over which to calculate the indicators
         
         """
@@ -271,6 +272,7 @@ while True:
     f3 = MovingAverage()
     f4 = MovingAverage()
 
+    max_slope = 0
 
     # iterate over the history of the stock
     for i in range(days):
@@ -292,7 +294,7 @@ while True:
         f4.Update(200)
 
         # decide if we buy, sell, or hold
-        portfolio.Decide(f1, f2, f3)
+        portfolio.Decide()
     
     
     # did we win?
