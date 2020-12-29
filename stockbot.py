@@ -39,10 +39,31 @@ class Portfolio:
         self.portfolio_value = self.capital + self.shares*price
 
 
-    def Decide(self):   
-        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here. """
+    def Decide(self, f1, f2, f3, f4):   
+        """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here. 
+        
+            Arguments (keep these or design your own):
+                f1: 10 day moving average
+                f2: 50 day moving average
+                f3: 100 day moving average
+                f3: 200 day moving average    
+        """
 
         
+        # here is the skeleton of an algorithm; fill in the logic for calculating the probability of profit and expected return
+
+        prob_profit = 0
+        expected_return = 0
+        modifier = 0
+        position = self.OptimalPosition(expected_return, prob_profit, modifier)
+        shares = abs(int(position/price))
+        
+        if position > 0:
+            self.Order(Decisions.buy, shares)
+        else:
+            self.Order(Decisions.sell, shares)
+
+
 
     def Order(self, decision, n = -1):
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n.
@@ -84,11 +105,11 @@ class Portfolio:
 
     
     
-    def OptimalPosition(expected_return, prob_win, modifier):
+    def OptimalPosition(self, expected_return, prob_win, modifier):
         """ Uses the Kelly Criterion to calculate the optimal position size for a given play.
 
             Arguments:
-                expected return: the expected value of the shares at the end of the play minus the value today
+                expected return: a float representing your percent gain (eg. 1.1 if you think you will gain 10%)
                 prob_win: the fractional probability that we will get our expected return
                 modifier: a value between 0 and 1; higher values make for a more aggressive bet
         """
@@ -244,7 +265,7 @@ while True:
 
     # get ticker information and price history
     ticker_info = yf.Ticker(ticker)
-    price_history = ticker_info.history(start="1990-01-01",  end="2020-12-20")
+    price_history = ticker_info.history(start="2015-01-01",  end="2020-12-20")
 
     # assign lists for the open/close prices, the moving-average values, 
     # and the daily average prices.
@@ -256,9 +277,6 @@ while True:
     # the number of days we are looking back in history
     price = closes[0]
     days = opens.size
-
-    # initialize figure for plottingexit
-    fig, ax = plt.subplots()
 
     # initialize the portfolio and moving average objects
     starting_capital = 0
@@ -294,7 +312,7 @@ while True:
         f4.Update(200)
 
         # decide if we buy, sell, or hold
-        portfolio.Decide()
+        portfolio.Decide(f1, f2, f3, f4)
     
     
     # did we win?
@@ -310,19 +328,17 @@ while True:
     print(f"Returns: {(algo_value - entry_price):,.2f}")
     print(" ")
 
-    plt.plot([0], [prices[0]], marker='o', markersize=4, color="red", label="Sell Point")
-    plt.plot([0], [prices[0]], marker='o', markersize=4, color="limegreen", label="Buy Point")
-
     # plot the price history and moving average history
+    plot1 = plt.figure(1)
     x = list(range(0, days))
     plt.plot(x, prices)
     plt.title(ticker)
     plt.xlabel("Days")
     plt.ylabel("Price")
-    plt.legend()
     
-    plt.plot(x, f1.averages)
-    plt.plot(x, f2.averages)
-    plt.plot(x, f3.averages)
-    plt.plot(x, f4.averages)
+    #plt.plot(x, f1.averages)
+    # plt.plot(x, f2.averages)
+    # plt.plot(x, f3.averages)
+    # plt.plot(x, f4.averages)
+
     plt.show()
