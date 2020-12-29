@@ -336,9 +336,9 @@ while True:
     plt.xlabel("Days")
     plt.ylabel("Price")
     
-    #plt.plot(x, f1.averages)
-    # plt.plot(x, f2.averages)
-    # plt.plot(x, f3.averages)
-    # plt.plot(x, f4.averages)
+    plt.plot(x, f1.averages)
+    plt.plot(x, f2.averages)
+    plt.plot(x, f3.averages)
+    plt.plot(x, f4.averages)
 
     plt.show()
