@@ -54,7 +54,12 @@ class Portfolio:
 
         prob_profit = 0
         expected_return = 0
-        modifier = 0
+        modifier = 0.5
+        
+        
+       #                ~~~~   fill in code here   ~~~~
+
+
         position = self.OptimalPosition(expected_return, prob_profit, modifier)
         shares = abs(int(position/price))
         
