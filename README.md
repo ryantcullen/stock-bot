@@ -18,7 +18,7 @@ You will be asked to enter a ticker for the stock that you want to test the algo
 If you want to modify the algorithm and design your own, you only need to change the Decide() method. That method takes three functions, and you can decide what those are or design your own inputs. My implementation uses moving averages and their derivatives/concavity (the class for which is set up for you to use in your own algorithm).
 
 ## Roadmap
-Looking to integrate PyTorrch or TensorFLow to provide ML capabilites for users to play with. 
+Looking to integrate PyTorch or TensorFLow to provide ML capabilites for users to play with. 
 
 
 ## Contributing
