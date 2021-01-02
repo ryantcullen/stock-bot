@@ -43,10 +43,7 @@ class Portfolio:
         """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here. 
         
             Arguments (keep these or design your own):
-                f1: 10 day moving average
-                f2: 50 day moving average
-                f3: 100 day moving average
-                f3: 200 day moving average    
+                f1, f2, f3, f4: moving averages over different time periods
         """
 
         
@@ -304,11 +301,17 @@ while True:
         price = closes[i]
         prices.append(price)
         
-        # calculate the current moving averages
-        f1.averages.append(f1.CalculateAverage(prices, 10))
-        f2.averages.append(f2.CalculateAverage(prices, 50))
-        f3.averages.append(f3.CalculateAverage(prices, 100))
-        f4.averages.append(f4.CalculateAverage(prices, 200))
+        # ask for time periods to calculate moving averages
+        f1_window = Input("Calculate the __ day moving average: "
+        f2_window = Input("Calculate the __ day moving average: "
+        f3_window = Input("Calculate the __ day moving average: "                  
+        f4_window = Input("Calculate the __ day moving average: "
+        
+        # calculate the moving averages
+        f1.averages.append(f1.CalculateAverage(prices, f1_window))
+        f2.averages.append(f2.CalculateAverage(prices, f2_window))
+        f3.averages.append(f3.CalculateAverage(prices, f3_window))
+        f4.averages.append(f4.CalculateAverage(prices, f4_window))
         
         # update the functions
         f1.Update(10)
