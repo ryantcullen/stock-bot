@@ -302,10 +302,10 @@ while True:
         prices.append(price)
         
         # ask for time periods to calculate moving averages
-        f1_window = Input("Calculate the __ day moving average: "
-        f2_window = Input("Calculate the __ day moving average: "
-        f3_window = Input("Calculate the __ day moving average: "                  
-        f4_window = Input("Calculate the __ day moving average: "
+        f1_window = Input("Calculate the __ day moving average: ")
+        f2_window = Input("Calculate the __ day moving average: ")
+        f3_window = Input("Calculate the __ day moving average: ")              
+        f4_window = Input("Calculate the __ day moving average: ")
         
         # calculate the moving averages
         f1.averages.append(f1.CalculateAverage(prices, f1_window))
