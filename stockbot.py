@@ -314,10 +314,10 @@ while True:
         f4.averages.append(f4.CalculateAverage(prices, f4_window))
         
         # update the functions
-        f1.Update(10)
-        f2.Update(50)
-        f3.Update(100)
-        f4.Update(200)
+        f1.Update(f1_window)
+        f2.Update(f2_window)
+        f3.Update(f3_window)
+        f4.Update(f4_window)
 
         # decide if we buy, sell, or hold
         portfolio.Decide(f1, f2, f3, f4)
