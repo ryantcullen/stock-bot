@@ -301,11 +301,16 @@ while True:
         price = closes[i]
         prices.append(price)
         
-        # ask for time periods to calculate moving averages
-        f1_window = Input("Calculate the __ day moving average: ")
-        f2_window = Input("Calculate the __ day moving average: ")
-        f3_window = Input("Calculate the __ day moving average: ")              
-        f4_window = Input("Calculate the __ day moving average: ")
+        f1_window = 10
+        f2_window = 50
+        f3_window = 100
+        f4_window = 200
+        
+        # ask for time periods to calculate moving averages (optional)
+        # f1_window = Input("Calculate the __ day moving average: ")
+        # f2_window = Input("Calculate the __ day moving average: ")
+        # f3_window = Input("Calculate the __ day moving average: ")              
+        # f4_window = Input("Calculate the __ day moving average: ")
         
         # calculate the moving averages
         f1.averages.append(f1.CalculateAverage(prices, f1_window))
