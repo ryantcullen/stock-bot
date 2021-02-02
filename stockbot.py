@@ -49,8 +49,8 @@ class Portfolio:
         
         # here is the skeleton of an algorithm; fill in the logic for calculating the probability of profit and expected return
 
-        prob_profit = 0
-        expected_return = 0
+        prob_profit = 0.1
+        expected_return = 1.1
         modifier = 0.5
         
         
@@ -333,12 +333,12 @@ while True:
     algo_value = portfolio.PortfolioValue()
 
     print(" ")
-    print(f"Capital: {portfolio.capital:,.2f}")
-    print(f"Shares: {portfolio.shares:,.2f}")
-    print(f"Buy and Hold portfolio value: {control_value:,.2f}")
-    print(f"Returns: {(control_value - entry_price):,.2f}")
-    print(f"Algorithm portfolio value:  {algo_value:,.2f}")
-    print(f"Returns: {(algo_value - entry_price):,.2f}")
+    print("Capital: {}".format(portfolio.capital))
+    print("Shares: {}".format(portfolio.shares))
+    print("Buy and Hold portfolio value: {}".format(control_value))
+    print("Returns: {}".format(control_value - entry_price))
+    print("Algorithm portfolio value:  {}".format(algo_value))
+    print("Returns: {}".format(algo_value - entry_price))
     print(" ")
 
     # plot the price history and moving average history
