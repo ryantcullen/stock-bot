@@ -78,7 +78,7 @@ class Portfolio:
 
         counter = 0
 
-        # buy n
+        # buy n shares
         if decision == Decisions.buy:
             counter = 0  
             while self.capital >= price:
@@ -88,7 +88,7 @@ class Portfolio:
                 if counter == n:
                     break
             
-        # sell n
+        # sell n shares
         elif decision == Decisions.sell:
             counter = 0  
             while self.shares > 0:
