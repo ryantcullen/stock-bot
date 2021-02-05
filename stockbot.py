@@ -98,7 +98,7 @@ class Portfolio:
                 if counter == n:
                     break
 
-        # plot a dot for buy or sell
+        # plot a dot for buy or sell points
         if counter > 0:
             if decision.value > 0:
                 plt.plot([i], [price], marker='o', markersize=4, color="limegreen")
