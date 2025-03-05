@@ -56,7 +56,7 @@ class Portfolio:
 
         # Calculates the optimal position (and subsequent number of shares) based on the above parameters
         position = self.OptimalPosition(expected_return, prob_profit, modifier)
-        shares = abs(int(position/priceo))
+        shares = abs(int(position/price))
 
         # Buy or Sell shares based on the results of the algorithm
         if position > 0:
@@ -300,6 +300,7 @@ while True:
         price = closes[i]
         prices.append(price)
         
+        # set the windoews for the moving averages
         f1_window = 10
         f2_window = 50
         f3_window = 100
@@ -331,6 +332,7 @@ while True:
     control_value = starting_capital + (prices[days - 1] * starting_shares)
     algo_value = portfolio.PortfolioValue()
 
+    # print our portfolio information
     print(" ")
     print("Capital: {}".format(portfolio.capital))
     print("Shares: {}".format(portfolio.shares))
@@ -340,7 +342,7 @@ while True:
     print("Returns: {}".format(algo_value - entry_price))
     print(" ")
 
-    # plot the price history and moving average history
+    # plot the price history
     plot1 = plt.figure(1)
     x = list(range(0, days))
     plt.plot(x, prices)
@@ -348,9 +350,11 @@ while True:
     plt.xlabel("Days")
     plt.ylabel("Price")
     
+    # plot the moving averages
     plt.plot(x, f1.averages)
     plt.plot(x, f2.averages)
     plt.plot(x, f3.averages)
     plt.plot(x, f4.averages)
 
+    # show the plot
     plt.show()
