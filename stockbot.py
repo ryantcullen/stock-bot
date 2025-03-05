@@ -43,24 +43,28 @@ class Portfolio:
         """ This is where the script decides to Buy, Sell, or Hold; Desgin your algorithm logic here. 
         
             Arguments (keep these or design your own):
-                f1, f2, f3, f4: moving averages over different time periods
+                f1, f2, f3, f4: moving averages of the stock price over different time periods
+                
         """
 
-        
-        # here is the skeleton of an algorithm; fill in the logic for calculating the probability of profit and expected return
-        
         #       ~~~~   Modify code below to implement your own trading Algorithm   ~~~~
 
-        
+        #TODO: design an algorithm that modifies these values based on the price data 
+        prob_profit = 0.501                             # probability of profit (eg, 50.1%)
+        expected_return = 1.2                           # expected return (eg. 120%)
+        modifier = 0.2                                  # value from 0-1; higher values make a more aggressive bet
+
+        # Calculates the optimal position (and subsequent number of shares) based on the above parameters
         position = self.OptimalPosition(expected_return, prob_profit, modifier)
         shares = abs(int(position/priceo))
-        
+
+        # Buy or Sell shares based on the results of the algorithm
         if position > 0:
             self.Order(Decisions.buy, shares)
         else:
             self.Order(Decisions.sell, shares)
-
-       #                    ~~~~  End of trading algorithm   ~~~~
+        
+       #                        ~~~~  End of trading algorithm   ~~~~
 
     def Order(self, decision, n = -1):
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n.
