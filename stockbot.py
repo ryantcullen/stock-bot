@@ -48,24 +48,19 @@ class Portfolio:
 
         
         # here is the skeleton of an algorithm; fill in the logic for calculating the probability of profit and expected return
-
-        prob_profit = 0.1
-        expected_return = 1.1
-        modifier = 0.5
         
+        #       ~~~~   Modify code below to implement your own trading Algorithm   ~~~~
+
         
-       #                ~~~~   fill in code here   ~~~~
-
-
         position = self.OptimalPosition(expected_return, prob_profit, modifier)
-        shares = abs(int(position/price))
+        shares = abs(int(position/priceo))
         
         if position > 0:
             self.Order(Decisions.buy, shares)
         else:
             self.Order(Decisions.sell, shares)
 
-
+       #                    ~~~~  End of trading algorithm   ~~~~
 
     def Order(self, decision, n = -1):
         """ Executes a buy/sell order of n shares, or a buy/sell max order if no input for n.
