@@ -28,7 +28,6 @@ class Portfolio:
     Funtions:
         Decide(): This is where the logic of when to buy, sell, or hold should go
         Order(): Used to execute a buy or sell order
-        
     """
        
     def __init__(self, capital, shares): 
