@@ -16,7 +16,7 @@ pip install yfinance
 You will be asked to enter a ticker for the stock that you want to test the algorithm on.
 
 ## Designing Your Own Algorithm
-If you want to modify the algorithm and design your own, you only need to change the Decide() function so that the followig parameters are updated based on your algorithm logic:
+If you want to modify the algorithm and design your own, you only need to change the Decide() function so that the following parameters are updated based on your algorithm logic:
 ```
 prob_profit = 0.501                             # probability of profit (eg, 50.1%)
 expected_return = 1.2                           # expected return (eg. 120%)
